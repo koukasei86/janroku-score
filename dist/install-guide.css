@@ -1,0 +1,54 @@
+.install-guide {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  margin: 0 0 24px;
+  padding: 20px 48px 20px 20px;
+  border: 1px solid #b8cec4;
+  border-radius: 16px;
+  background: #eaf2ee;
+  box-shadow: 0 4px 16px rgb(19 60 50 / 8%);
+}
+
+.install-guide-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 52px;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: #133c32;
+  color: white;
+  font-family: serif;
+  font-size: 1.8rem;
+  box-shadow: 0 3px 0 #aac0b5;
+}
+
+.install-guide h2 { margin: 1px 0 5px; font-size: 1.05rem; }
+.install-guide p { color: #526b60; font-size: .9rem; line-height: 1.65; }
+.install-guide ol { margin: 13px 0 0; padding-left: 1.4rem; color: #294a40; }
+.install-guide li { margin-top: 8px; line-height: 1.6; font-size: .9rem; }
+.share-symbol { display: inline-block; color: #0b6bcc; font-size: 1.05rem; font-weight: 700; }
+.install-guide-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  min-height: 40px;
+  width: 40px;
+  border: 0;
+  background: transparent;
+  color: #5f756c;
+  font-size: 1.35rem;
+}
+
+@media (max-width: 480px) {
+  .install-guide {
+    gap: 12px;
+    margin-top: -4px;
+    padding: 17px 40px 17px 15px;
+    border-radius: 15px;
+  }
+  .install-guide-icon { flex-basis: 45px; width: 45px; height: 45px; font-size: 1.5rem; }
+  .install-guide h2 { font-size: 1rem; }
+  .install-guide p, .install-guide li { font-size: .86rem; }
+}

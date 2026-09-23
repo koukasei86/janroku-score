@@ -113,6 +113,23 @@ $('#confirm-reset').addEventListener('click', () => {
 
 render();
 
+const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+if (isIOS && !isStandalone && sessionStorage.getItem('janroku.installGuideClosed') !== '1') {
+  $('#install-guide').hidden = false;
+  // Safariで開いている場合は、最初の手順を省いて迷いを減らします。
+  const isSafari = /Safari/i.test(navigator.userAgent) && !/CriOS|FxiOS|EdgiOS|OPiOS/i.test(navigator.userAgent);
+  if (isSafari) $('#open-safari-step').hidden = true;
+}
+$('#close-install-guide').addEventListener('click', () => {
+  $('#install-guide').hidden = true;
+  sessionStorage.setItem('janroku.installGuideClosed', '1');
+});
+
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || ['localhost', '127.0.0.1'].includes(location.hostname))) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));
+}
+
 // 対応するブラウザのみ、画面と同じ登録処理をエージェントにも提供します。
 if (document.modelContext?.registerTool) {
   try {

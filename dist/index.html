@@ -9,16 +9,32 @@
   <meta name="apple-mobile-web-app-title" content="雀録">
   <meta name="description" content="4人麻雀の点数を3人分入力するだけ。残り1人の自動計算、収支の累計と対局履歴を保存します。">
   <title>雀録 — 麻雀スコア</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23133c32'/%3E%3Ctext x='16' y='24' text-anchor='middle' font-size='23' fill='white'%3E雀%3C/text%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+  <link rel="manifest" href="./manifest.webmanifest">
   <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="./iphone.css">
   <link rel="stylesheet" href="./reset-button.css">
+  <link rel="stylesheet" href="./install-guide.css">
   <script type="module" src="./app.mjs"></script>
 </head>
 <body>
   <header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true">雀</span><div><strong>雀録<span class="brand-reading">じゃんろく</span></strong><small>麻雀スコア</small></div></div><span class="version">VER. 1.0</span></header>
   <main>
     <div id="storage-warning" class="notice error" role="alert" hidden></div>
+    <section id="install-guide" class="install-guide" aria-labelledby="install-title" hidden>
+      <button id="close-install-guide" class="install-guide-close" type="button" aria-label="ホーム画面への追加案内を閉じる">×</button>
+      <div class="install-guide-icon" aria-hidden="true">雀</div>
+      <div class="install-guide-content">
+        <h2 id="install-title">ホーム画面に保存できます</h2>
+        <p>次からは「雀録」のアイコンをタップするだけで開けます。</p>
+        <ol>
+          <li id="open-safari-step"><strong>Safari</strong>でこのページを開く</li>
+          <li>画面下の<strong>共有ボタン</strong> <span class="share-symbol" aria-label="四角から上向き矢印の共有マーク">□↑</span> をタップ</li>
+          <li><strong>「ホーム画面に追加」</strong> → 右上の<strong>「追加」</strong></li>
+        </ol>
+      </div>
+    </section>
     <section id="setup" class="setup panel">
       <span class="eyebrow">NEW GAME</span>
       <h1>今日の4人を登録</h1>
