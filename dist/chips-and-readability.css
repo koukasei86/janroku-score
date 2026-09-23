@@ -21,8 +21,9 @@
 .chip-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .chip-card { display: block; min-width: 0; padding: 15px; border: 1px solid var(--border); border-top: 3px solid var(--player); border-radius: 10px; background: #fafcfb; }
 .chip-control { position: relative; display: block; }
-.chip-control input { height: 58px; padding-right: 76px; font-size: 1.45rem; font-weight: 700; font-variant-numeric: tabular-nums; }
-.chip-unit { position: absolute; right: 50px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: .85rem; pointer-events: none; }
+.chip-control input { height: 58px; padding-left: 12px; padding-right: 48px; font-size: 1.45rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+/* 「枚」は見出しの「1枚 = 5点」で示し、狭いiPhoneでは数字の表示幅を優先します。 */
+.chip-unit { display: none; }
 .chip-sign-button { position: absolute; right: 4px; top: 7px; width: 40px; min-height: 44px; border: 0; border-left: 1px solid var(--border); background: transparent; color: #315e50; font-size: 1.1rem; font-weight: 750; }
 .chip-points { display: block; margin-top: 11px; color: var(--muted); font-size: .82rem; }
 .chip-points b { font-size: 1rem; }
@@ -53,4 +54,13 @@
   .chip-card { padding-inline: 10px; }
   .chip-control input { font-size: 1.3rem; }
   .final-total span { font-size: 1.08rem; }
+}
+
+@media (max-width: 380px) {
+  .chip-control input {
+    padding-left: 8px;
+    padding-right: 44px;
+    font-size: 1.3rem;
+  }
+  .chip-sign-button { width: 37px; }
 }
