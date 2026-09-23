@@ -27,8 +27,16 @@
 .chip-sign-button { position: absolute; right: 4px; top: 7px; width: 40px; min-height: 44px; border: 0; border-left: 1px solid var(--border); background: transparent; color: #315e50; font-size: 1.1rem; font-weight: 750; }
 .chip-points { display: block; margin-top: 11px; color: var(--muted); font-size: .82rem; }
 .chip-points b { font-size: 1rem; }
-.final-total { display: flex; justify-content: space-between; gap: 6px; margin-top: 8px; padding-top: 9px; border-top: 1px solid var(--border); color: #40584e; font-size: .82rem; }
-.final-total span { font-size: 1.2rem; font-variant-numeric: tabular-nums; }
+.final-total { display: block; margin-top: 8px; padding-top: 9px; border-top: 1px solid var(--border); color: #40584e; font-size: .82rem; }
+.final-total span {
+  display: block;
+  margin-top: 2px;
+  font-size: 2.7rem;
+  font-weight: 650;
+  line-height: 1.3;
+  letter-spacing: -.035em;
+  font-variant-numeric: tabular-nums;
+}
 .chip-meta { display: flex; justify-content: space-between; gap: 10px; margin-top: 14px; color: var(--muted); font-size: .8rem; }
 .chip-warning { color: #a0362c; font-weight: 600; }
 .chip-section .form-error:empty { margin: 0; }
@@ -47,13 +55,18 @@
   .chip-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .chip-card { padding: 13px; }
   .chip-meta { flex-direction: column; gap: 4px; }
+  .final-total span { font-size: 2.25rem; }
+}
+
+@media (max-width: 480px) {
+  .final-total span { font-size: 2.1rem; }
 }
 
 @media (max-width: 350px) {
   .chip-section { padding-inline: 13px; }
   .chip-card { padding-inline: 10px; }
   .chip-control input { font-size: 1.3rem; }
-  .final-total span { font-size: 1.08rem; }
+  .final-total span { font-size: 1.9rem; }
 }
 
 @media (max-width: 380px) {
