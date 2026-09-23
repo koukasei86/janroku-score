@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { completeRound, getRemainingScores, getTotals, getRanks, formatScore, validateNames } from '../dist/scoring.mjs';
+import { completeRound, getRemainingScores, getTotals, getRanks, getChipPoints, getFinalTotals, parseChipCount, formatScore, validateNames } from '../dist/scoring.mjs';
 import { loadGame, saveGame, removeGame, STORAGE_KEY } from '../dist/storage.mjs';
 
 test('4人の名前・空白除去・不足時のエラー', () => {
@@ -31,16 +31,28 @@ test('履歴からの累計・同順位・符号', () => {
   assert.equal(formatScore(100,true), '+10');
   assert.equal(formatScore(-100,true), '-10');
 });
+test('チップ枚数を1枚5点で換算し、現在累計へ加算', () => {
+  const rounds = [completeRound(['-20','-10','10',''])];
+  const chips = [3, -1, 0, -2];
+  assert.equal(parseChipCount('3'), 3);
+  assert.equal(parseChipCount(''), 0);
+  assert.deepEqual(getChipPoints(chips), [150, -50, 0, -100]);
+  assert.deepEqual(getFinalTotals(rounds, chips), [-50, -150, 100, 100]);
+  assert.throws(() => parseChipCount('1.5'));
+  assert.throws(() => parseChipCount('abc'));
+  assert.throws(() => parseChipCount('1000'));
+});
 test('保存・復元・旧形式の変換・リセット・破損データ', () => {
   const map = new Map();
   const storage = { getItem:key=>map.get(key)??null, setItem:(key,value)=>map.set(key,value), removeItem:key=>map.delete(key) };
-  const game = { version:2, players:['A','B','C','D'], rounds:[completeRound(['-20','-10','10',''])] };
+  const game = { version:2, players:['A','B','C','D'], rounds:[completeRound(['-20','-10','10',''])], chips:[3,-1,0,-2] };
   saveGame(game,storage);
   assert.deepEqual(loadGame(storage), {...game,totals:[-200,-100,100,200]});
   removeGame(storage); assert.equal(loadGame(storage),null);
   const oldGame = { version:1, players:['A','B','C','D'], rounds:[{scores:[100,200,400,500],autoIndex:3}] };
   storage.setItem(STORAGE_KEY,JSON.stringify(oldGame));
   assert.deepEqual(loadGame(storage).rounds[0].scores,[-200,-100,100,200]);
+  assert.deepEqual(loadGame(storage).chips,[0,0,0,0]);
   const oldMisenteredGame = { version:1, players:['A','B','C','D'], rounds:[{scores:[-200,-100,100,1400],autoIndex:3}] };
   storage.setItem(STORAGE_KEY,JSON.stringify(oldMisenteredGame));
   assert.deepEqual(loadGame(storage).rounds[0].scores,[-200,-100,100,200]);

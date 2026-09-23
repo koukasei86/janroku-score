@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="./iphone.css">
   <link rel="stylesheet" href="./reset-button.css">
   <link rel="stylesheet" href="./install-guide.css">
+  <link rel="stylesheet" href="./chips-and-readability.css">
   <script type="module" src="./app.mjs"></script>
 </head>
 <body>
@@ -73,6 +74,13 @@
         <div class="section-heading"><h2 id="history-title">対局履歴</h2><span class="muted history-hint">各回の収支</span></div>
         <div class="table-wrap"><table id="history-table"><caption class="sr-only">各回の収支と現在累計。自動計算した収支には「自動」と表示します。</caption><thead id="history-head"></thead><tbody id="history-body"></tbody><tfoot id="history-foot"></tfoot></table></div>
         <div id="empty-history" class="empty-state"><span aria-hidden="true">—</span><strong>最初の結果を待っています</strong><p>登録した結果が、ここに積み重なります。</p></div>
+      </section>
+      <section class="panel chip-section" aria-labelledby="chip-title">
+        <div class="section-heading"><div><span class="eyebrow">FINAL TOTAL</span><h2 id="chip-title">チップ精算</h2></div><span class="pill">1枚 = 5点</span></div>
+        <p class="muted chip-instruction">各プレイヤーのチップ枚数を入力すると、現在累計に加えた最終合計を自動表示します。</p>
+        <div id="chip-inputs" class="chip-grid"></div>
+        <div class="chip-meta"><span id="chip-balance"></span><span>入力内容は自動保存</span></div>
+        <p id="chip-error" class="form-error" role="alert"></p>
       </section>
       <footer class="game-footer"><span>このブラウザに自動保存</span><button id="reset-button" class="reset-button" type="button">ゲームをリセット</button></footer>
     </div>

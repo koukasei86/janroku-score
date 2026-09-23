@@ -2,6 +2,7 @@
 export const BASE = 300;
 export const TOTAL = 1200;
 export const LIMIT = 999999; // 異常な桁数や誤入力を拒否するための上限。
+export const CHIP_LIMIT = 999;
 
 export function parseScore(value) {
   const text = String(value).trim();
@@ -25,6 +26,20 @@ export function completeRound(values) {
 
 export function getTotals(rounds) {
   return rounds.reduce((totals, round) => totals.map((total, index) => total + round.scores[index]), [0, 0, 0, 0]);
+}
+export function parseChipCount(value) {
+  const text = String(value).trim();
+  if (text === '') return 0;
+  if (!/^[+-]?\d+$/.test(text)) throw new Error('チップは枚数を半角の整数で入力してください。');
+  const count = Number(text);
+  if (!Number.isSafeInteger(count) || Math.abs(count) > CHIP_LIMIT) throw new Error('チップは −999枚〜999枚の範囲で入力してください。');
+  return count;
+}
+// 画面の1点は内部で10単位。チップ1枚=5点なので50単位を加算します。
+export function getChipPoints(chips) { return chips.map(count => count * 50); }
+export function getFinalTotals(rounds, chips) {
+  const totals = getTotals(rounds);
+  return totals.map((total, index) => total + getChipPoints(chips)[index]);
 }
 export function getRemainingScores(round) { return round.scores.map(score => BASE + score); }
 export function getRanks(totals) { return totals.map(total => 1 + totals.filter(other => other > total).length); }

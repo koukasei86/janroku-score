@@ -1,4 +1,4 @@
-import { completeRound, getTotals, getRanks, formatScore, validateNames } from './scoring.mjs';
+import { completeRound, getTotals, getRanks, getChipPoints, getFinalTotals, parseChipCount, formatScore, validateNames } from './scoring.mjs';
 import { loadGame, saveGame, removeGame } from './storage.mjs';
 
 const $ = selector => document.querySelector(selector);
@@ -40,8 +40,27 @@ function render() {
   $('#history-head').innerHTML = `<tr><th scope="col">回</th>${game.players.map(name => `<th scope="col">${escapeHtml(name)}</th>`).join('')}</tr>`;
   $('#history-body').innerHTML = game.rounds.map((round, index) => `<tr><th scope="row">${index + 1}</th>${round.scores.map((score, i) => `<td><strong class="round-result ${tone(score)}">${formatScore(score, true)}</strong>${i === round.autoIndex ? '<span class="auto-tag">自動</span>' : ''}</td>`).join('')}</tr>`).join('');
   $('#history-foot').innerHTML = `<tr><th scope="row">現在累計</th>${totals.map(total => `<td class="${tone(total)}">${formatScore(total, true)}</td>`).join('')}</tr>`;
+  renderChipSection(totals);
   $('.table-wrap').hidden = game.rounds.length === 0;
   $('#empty-history').hidden = game.rounds.length !== 0;
+}
+
+function renderChipSection(totals) {
+  const chips = game.chips || [0, 0, 0, 0];
+  $('#chip-inputs').innerHTML = game.players.map((name, i) => `<label class="chip-card" style="--player:${colors[i]}"><span class="field-label"><i class="player-dot p${i}"></i>${escapeHtml(name)}</span><span class="chip-control"><input name="chip${i}" aria-label="${escapeHtml(name)}のチップ枚数" type="text" inputmode="numeric" maxlength="4" value="${chips[i] || ''}" placeholder="0" autocomplete="off" spellcheck="false" data-previous="${chips[i] || ''}"><span class="chip-unit">枚</span></span><span class="chip-points" id="chip-points-${i}"></span><strong class="final-total" id="final-total-${i}"></strong></label>`).join('');
+  updateChipResults(totals);
+}
+
+function updateChipResults(totals = getTotals(game.rounds)) {
+  const chipPoints = getChipPoints(game.chips);
+  const finalTotals = getFinalTotals(game.rounds, game.chips);
+  game.players.forEach((_, i) => {
+    $(`#chip-points-${i}`).innerHTML = `チップ点 <b class="${tone(chipPoints[i])}">${formatScore(chipPoints[i], true)}</b>`;
+    $(`#final-total-${i}`).innerHTML = `最終合計 <span class="${tone(finalTotals[i])}">${formatScore(finalTotals[i], true)}</span>`;
+  });
+  const chipSum = game.chips.reduce((sum, count) => sum + count, 0);
+  $('#chip-balance').textContent = chipSum === 0 ? '4人のチップ合計：0枚' : `4人のチップ合計：${chipSum > 0 ? '+' : ''}${chipSum}枚（合計が0枚か確認してください）`;
+  $('#chip-balance').classList.toggle('chip-warning', chipSum !== 0);
 }
 
 $('#setup-form').addEventListener('submit', event => {
@@ -49,7 +68,7 @@ $('#setup-form').addEventListener('submit', event => {
   try {
     const players = validateNames([...new FormData(event.currentTarget).values()]);
     if (recoveryNeeded && !window.confirm('読み込めなかった保存データを、新しいゲームで上書きしますか？')) return;
-    commit({ version: 2, players, rounds: [] });
+    commit({ version: 2, players, rounds: [], chips: [0, 0, 0, 0] });
     $('#setup-error').textContent = '';
     $('#score-inputs input').focus();
   } catch (error) { $('#setup-error').textContent = error.message; }
@@ -95,6 +114,30 @@ $('#score-form').addEventListener('submit', event => {
   event.preventDefault();
   try { registerRound([...new FormData(event.currentTarget).values()]); }
   catch (error) { $('#score-error').textContent = error.message; $('#success').textContent = ''; }
+});
+
+$('#chip-inputs').addEventListener('input', event => {
+  if (!event.target.matches('input')) return;
+  const input = event.target;
+  if (!/^[+-]?\d*$/.test(input.value)) {
+    input.value = input.dataset.previous || '';
+    $('#chip-error').textContent = 'チップは枚数を半角の整数で入力してください。';
+    return;
+  }
+  input.dataset.previous = input.value;
+  // 「-」だけの入力途中は保存せず、数字が続くのを待ちます。
+  if (input.value === '-' || input.value === '+') return;
+  try {
+    const index = Number(input.name.replace('chip', ''));
+    const chips = [...game.chips];
+    chips[index] = parseChipCount(input.value);
+    saveGame({ ...game, chips });
+    game = { ...game, chips };
+    $('#chip-error').textContent = '';
+    updateChipResults();
+  } catch (error) {
+    $('#chip-error').textContent = error.message || 'チップを保存できませんでした。';
+  }
 });
 
 $('#reset-button').addEventListener('click', () => $('#reset-dialog').showModal());

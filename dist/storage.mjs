@@ -1,4 +1,4 @@
-import { LIMIT, getTotals, validateNames } from './scoring.mjs';
+import { LIMIT, CHIP_LIMIT, getTotals, validateNames } from './scoring.mjs';
 export const STORAGE_KEY = 'janroku.game.v1';
 
 export function loadGame(storage = localStorage) {
@@ -25,6 +25,8 @@ export function loadGame(storage = localStorage) {
     for (const round of game.rounds) {
       if (!Array.isArray(round.scores) || round.scores.length !== 4 || round.scores.some(score => !Number.isSafeInteger(score) || Math.abs(score) > LIMIT) || round.scores.reduce((a, b) => a + b, 0) !== 0 || !Number.isInteger(round.autoIndex) || round.autoIndex < 0 || round.autoIndex > 3) throw new Error();
     }
+    if (game.chips === undefined) game.chips = [0, 0, 0, 0];
+    if (!Array.isArray(game.chips) || game.chips.length !== 4 || game.chips.some(count => !Number.isSafeInteger(count) || Math.abs(count) > CHIP_LIMIT)) throw new Error();
     // 履歴を正とし、保存された累計にずれがあっても再計算します。
     game.totals = getTotals(game.rounds);
     return game;
