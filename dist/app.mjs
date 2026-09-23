@@ -47,7 +47,7 @@ function render() {
 
 function renderChipSection(totals) {
   const chips = game.chips || [0, 0, 0, 0];
-  $('#chip-inputs').innerHTML = game.players.map((name, i) => `<label class="chip-card" style="--player:${colors[i]}"><span class="field-label"><i class="player-dot p${i}"></i>${escapeHtml(name)}</span><span class="chip-control"><input name="chip${i}" aria-label="${escapeHtml(name)}のチップ枚数" type="text" inputmode="numeric" maxlength="4" value="${chips[i] || ''}" placeholder="0" autocomplete="off" spellcheck="false" data-previous="${chips[i] || ''}"><span class="chip-unit">枚</span></span><span class="chip-points" id="chip-points-${i}"></span><strong class="final-total" id="final-total-${i}"></strong></label>`).join('');
+  $('#chip-inputs').innerHTML = game.players.map((name, i) => `<article class="chip-card" style="--player:${colors[i]}"><span class="field-label chip-player-name"><i class="player-dot p${i}"></i>${escapeHtml(name)}</span><span class="chip-control"><input name="chip${i}" aria-label="${escapeHtml(name)}のチップ枚数" type="text" inputmode="numeric" maxlength="4" value="${chips[i] || ''}" placeholder="0" autocomplete="off" spellcheck="false" data-previous="${chips[i] || ''}"><span class="chip-unit">枚</span><button class="chip-sign-button" type="button" data-chip-index="${i}" aria-label="${escapeHtml(name)}のチップ枚数の正負を切り替え">±</button></span><span class="chip-points" id="chip-points-${i}"></span><strong class="final-total" id="final-total-${i}"></strong></article>`).join('');
   updateChipResults(totals);
 }
 
@@ -138,6 +138,15 @@ $('#chip-inputs').addEventListener('input', event => {
   } catch (error) {
     $('#chip-error').textContent = error.message || 'チップを保存できませんでした。';
   }
+});
+$('#chip-inputs').addEventListener('click', event => {
+  const button = event.target.closest('[data-chip-index]');
+  if (!button) return;
+  const input = $(`[name="chip${button.dataset.chipIndex}"]`);
+  input.value = input.value.startsWith('-') ? input.value.slice(1) : '-' + input.value.replace(/^\+/, '');
+  input.dataset.previous = input.value;
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+  input.focus();
 });
 
 $('#reset-button').addEventListener('click', () => $('#reset-dialog').showModal());

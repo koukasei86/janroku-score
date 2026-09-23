@@ -1,10 +1,11 @@
 /* 表の大きさは保ち、文字だけを読みやすくします。 */
-#history-table thead th { font-size: 1rem; }
+#history-table thead th { font-size: 1.08rem; font-weight: 750; }
 #history-table tbody th { font-size: .95rem; font-weight: 600; }
 #history-table .round-result { font-size: 1.22rem; line-height: 1.2; }
 #history-table .auto-tag { font-size: .72rem; font-weight: 600; }
 #history-table tfoot th,
 #history-table tfoot td { font-size: 1.18rem; }
+.score-card .player-name { font-size: 1.12rem; font-weight: 750; }
 
 .chip-section { margin-top: 28px; }
 .chip-section .section-heading { margin-bottom: 8px; }
@@ -12,8 +13,10 @@
 .chip-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .chip-card { display: block; min-width: 0; padding: 15px; border: 1px solid var(--border); border-top: 3px solid var(--player); border-radius: 10px; background: #fafcfb; }
 .chip-control { position: relative; display: block; }
-.chip-control input { height: 58px; padding-right: 38px; font-size: 1.45rem; font-weight: 700; font-variant-numeric: tabular-nums; }
-.chip-unit { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: .85rem; pointer-events: none; }
+.chip-player-name { font-size: 1.08rem; font-weight: 750; }
+.chip-control input { height: 58px; padding-right: 76px; font-size: 1.45rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.chip-unit { position: absolute; right: 50px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: .85rem; pointer-events: none; }
+.chip-sign-button { position: absolute; right: 4px; top: 7px; width: 40px; min-height: 44px; border: 0; border-left: 1px solid var(--border); background: transparent; color: #315e50; font-size: 1.1rem; font-weight: 750; }
 .chip-points { display: block; margin-top: 11px; color: var(--muted); font-size: .82rem; }
 .chip-points b { font-size: 1rem; }
 .final-total { display: flex; justify-content: space-between; gap: 6px; margin-top: 8px; padding-top: 9px; border-top: 1px solid var(--border); color: #40584e; font-size: .82rem; }
@@ -23,7 +26,7 @@
 .chip-section .form-error:empty { margin: 0; }
 
 @media (max-width: 640px) {
-  #history-table thead th { font-size: .86rem; }
+  #history-table thead th { font-size: .96rem; }
   #history-table tbody th { font-size: .86rem; }
   #history-table .round-result { font-size: 1.12rem; }
   #history-table tfoot th,

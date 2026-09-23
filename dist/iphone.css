@@ -54,7 +54,7 @@
   .score-section .section-heading { align-items: end; }
   .score-grid { gap: 9px; }
   .score-card { min-height: 127px; padding: 13px 14px 15px; }
-  .player-name { font-size: .95rem; }
+  .player-name { font-size: 1.05rem; font-weight: 750; }
   .total { font-size: 2.1rem; }
   .score-caption { margin: 10px 2px 22px; }
 
