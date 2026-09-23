@@ -1,0 +1,33 @@
+.reset-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 11px 17px;
+  border: 1px solid #d9aaa2;
+  border-radius: 10px;
+  background: #fff8f6;
+  color: #913c34;
+  font-size: .92rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 2px 7px rgb(68 47 41 / 7%);
+}
+
+.reset-button::before {
+  content: "↻";
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.reset-button:hover { background: #fff0ec; }
+
+@media (max-width: 480px) {
+  .game-footer { gap: 12px; }
+  .reset-button {
+    width: 100%;
+    min-height: 52px;
+    font-size: 1rem;
+  }
+}
