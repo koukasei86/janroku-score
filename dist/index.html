@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#133c32">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="雀録">
+  <meta name="description" content="4人麻雀の点数を3人分入力するだけ。残り1人の自動計算、収支の累計と対局履歴を保存します。">
+  <title>雀録 — 麻雀スコア</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23133c32'/%3E%3Ctext x='16' y='24' text-anchor='middle' font-size='23' fill='white'%3E雀%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./iphone.css">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+  <header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true">雀</span><div><strong>雀録<span class="brand-reading">じゃんろく</span></strong><small>麻雀スコア</small></div></div><span class="version">VER. 1.0</span></header>
+  <main>
+    <div id="storage-warning" class="notice error" role="alert" hidden></div>
+    <section id="setup" class="setup panel">
+      <span class="eyebrow">NEW GAME</span>
+      <h1>今日の4人を登録</h1>
+      <p class="muted">名前を入力して、対局を始めましょう。</p>
+      <form id="setup-form" novalidate>
+        <div class="name-grid">
+          <label><span class="field-label"><i class="player-dot p0"></i>プレイヤー1</span><input name="player0" aria-label="プレイヤー1の名前" maxlength="20" placeholder="Aさん" autocomplete="off" required></label>
+          <label><span class="field-label"><i class="player-dot p1"></i>プレイヤー2</span><input name="player1" aria-label="プレイヤー2の名前" maxlength="20" placeholder="Bさん" autocomplete="off" required></label>
+          <label><span class="field-label"><i class="player-dot p2"></i>プレイヤー3</span><input name="player2" aria-label="プレイヤー3の名前" maxlength="20" placeholder="Cさん" autocomplete="off" required></label>
+          <label><span class="field-label"><i class="player-dot p3"></i>プレイヤー4</span><input name="player3" aria-label="プレイヤー4の名前" maxlength="20" placeholder="Dさん" autocomplete="off" required></label>
+        </div>
+        <p id="setup-error" class="form-error" role="alert"></p>
+        <button class="primary wide" type="submit">この4人で始める <span aria-hidden="true">→</span></button>
+      </form>
+      <div class="setup-rule"><strong>30,000点持ち / 合計120</strong><span>このアプリでは 1,000点を「1」と入力します。</span></div>
+    </section>
+
+    <div id="game" hidden>
+      <section class="score-section" aria-labelledby="total-title">
+        <div class="section-heading"><div><span class="eyebrow">SCOREBOARD</span><h1 id="total-title">現在の累計</h1></div><span id="round-count" class="count"></span></div>
+        <div id="scoreboard" class="score-grid"></div>
+        <div class="score-caption"><span>各回の収支をそのまま累計</span><span>1 = 1,000点</span></div>
+      </section>
+      <section class="panel entry-panel" aria-labelledby="entry-title">
+        <div class="section-heading"><h2 id="entry-title">第1回の結果</h2><span class="pill">3人入力 + 1人自動</span></div>
+        <p class="muted instruction">3人の収支を入力。例：2万点負けは「−20」。残り1人は空欄でOK。</p>
+        <form id="score-form" novalidate>
+          <div id="score-inputs" class="input-grid"></div>
+          <div class="entry-meta"><span id="input-status" aria-live="polite">0 / 3人 入力済み</span><span>マイナス・小数1桁まで対応</span></div>
+          <p id="score-error" class="form-error" role="alert"></p>
+          <button class="primary wide" type="submit">結果を登録 <span aria-hidden="true">＋</span></button>
+        </form>
+      </section>
+      <p id="success" class="success" role="status" aria-live="polite"></p>
+      <section class="history-section" aria-labelledby="history-title">
+        <div class="section-heading"><h2 id="history-title">対局履歴</h2><span class="muted history-hint">各回の収支</span></div>
+        <div class="table-wrap"><table id="history-table"><caption class="sr-only">各回の収支と現在累計。自動計算した収支には「自動」と表示します。</caption><thead id="history-head"></thead><tbody id="history-body"></tbody><tfoot id="history-foot"></tfoot></table></div>
+        <div id="empty-history" class="empty-state"><span aria-hidden="true">—</span><strong>最初の結果を待っています</strong><p>登録した結果が、ここに積み重なります。</p></div>
+      </section>
+      <footer class="game-footer"><span>このブラウザに自動保存</span><button id="reset-button" class="text-button" type="button">新しいゲームを始める</button></footer>
+    </div>
+    <footer class="app-footer">雀録 <span>·</span> 4人の勝負を、すっきり記録。</footer>
+  </main>
+  <dialog id="reset-dialog" aria-labelledby="reset-title" aria-describedby="reset-description"><h2 id="reset-title">新しいゲームを始めますか？</h2><p id="reset-description">現在のプレイヤー名・対局履歴・累計をすべて削除します。この操作は取り消せません。</p><div class="dialog-actions"><button id="cancel-reset" class="secondary" autofocus>戻る</button><button id="confirm-reset" class="danger">リセットする</button></div></dialog>
+</body>
+</html>

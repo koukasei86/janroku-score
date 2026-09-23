@@ -1,0 +1,107 @@
+/* iPhone向けの調整。PC版の見た目はstyles.cssのまま維持します。 */
+@media (max-width: 480px) {
+  html {
+    background: #f3f5f4;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100dvh;
+    overscroll-behavior-y: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    width: 100%;
+    min-height: calc(68px + env(safe-area-inset-top));
+    height: auto;
+    padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
+    background: rgb(243 245 244 / 94%);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+
+  .brand-mark {
+    width: 36px;
+    height: 41px;
+    font-size: 23px;
+  }
+
+  .brand strong { font-size: 1.2rem; }
+  .brand-reading { display: none; }
+  .version { font-size: .68rem; }
+
+  main {
+    padding: 22px max(14px, env(safe-area-inset-right)) max(28px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+  }
+
+  .panel { border-radius: 18px; }
+  .setup { margin-top: 0; }
+  .setup h1 { font-size: 1.45rem; }
+  .name-grid { grid-template-columns: 1fr; gap: 16px; margin-top: 24px; }
+
+  input {
+    min-height: 54px;
+    font-size: 16px;
+  }
+
+  button { min-height: 52px; }
+  .primary { min-height: 56px; font-size: 1rem; }
+
+  .score-section .section-heading { align-items: end; }
+  .score-grid { gap: 9px; }
+  .score-card { min-height: 127px; padding: 13px 14px 15px; }
+  .player-name { font-size: .95rem; }
+  .total { font-size: 2.1rem; }
+  .score-caption { margin: 10px 2px 22px; }
+
+  .entry-panel { padding: 20px 18px 18px; }
+  .input-grid { gap: 17px 12px; }
+  .score-control input {
+    height: 64px;
+    padding-left: 13px;
+    padding-right: 42px;
+    font-size: 1.45rem;
+  }
+  .score-control input::placeholder { font-size: .92rem; }
+  .sign-button { min-height: 44px; }
+  .entry-panel .primary { margin-top: 14px; }
+
+  .table-wrap {
+    margin-inline: -2px;
+    border-radius: 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+  th, td { padding-block: 14px; }
+  th:first-child { width: 32px; }
+  td { font-size: .98rem; }
+  td small { font-size: .72rem; }
+  .auto-tag { font-size: .62rem; }
+
+  .game-footer {
+    padding-bottom: max(4px, env(safe-area-inset-bottom));
+  }
+
+  dialog {
+    margin: auto 10px max(10px, env(safe-area-inset-bottom));
+    width: calc(100% - 20px);
+    max-width: none;
+    border-radius: 20px;
+    padding: 24px 20px;
+  }
+  .dialog-actions { display: grid; grid-template-columns: 1fr 1fr; }
+
+  button:active { transform: scale(.985); }
+}
+
+@media (max-width: 350px) {
+  main { padding-inline: 10px; }
+  .score-card { padding-inline: 11px; }
+  .total { font-size: 1.9rem; }
+  .entry-panel { padding-inline: 13px; }
+  .field-label { font-size: .8rem; }
+  .history-hint { font-size: .72rem; }
+}
