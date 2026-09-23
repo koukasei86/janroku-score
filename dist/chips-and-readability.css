@@ -5,6 +5,17 @@
 #history-table .auto-tag { font-size: .72rem; font-weight: 600; }
 #history-table tfoot th,
 #history-table tfoot td { font-size: 1.18rem; }
+#history-table thead th {
+  background: #cddbd4;
+  color: #173f34;
+  border-bottom-color: #b8cbc1;
+}
+#history-table tfoot th,
+#history-table tfoot td {
+  background: #bfd2c8;
+  border-top: 1px solid #a9c0b5;
+}
+#history-table tfoot th { color: #173f34; }
 /* 4か所のプレイヤー名を同じ大きさ・太さに統一します。 */
 .score-card .player-name,
 #score-inputs .field-label,
