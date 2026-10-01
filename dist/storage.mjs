@@ -1,5 +1,7 @@
 import { LIMIT, CHIP_LIMIT, getTotals, validateNames } from './scoring.mjs';
 export const STORAGE_KEY = 'janroku.game.v1';
+export const PLAYER_ROSTER_KEY = 'janroku.players.v1';
+export const SAVED_GAMES_KEY = 'janroku.savedGames.v1';
 
 export function loadGame(storage = localStorage) {
   const raw = storage.getItem(STORAGE_KEY);
@@ -36,3 +38,58 @@ export function saveGame(game, storage = localStorage) {
   storage.setItem(STORAGE_KEY, JSON.stringify({ ...game, totals: getTotals(game.rounds) }));
 }
 export function removeGame(storage = localStorage) { storage.removeItem(STORAGE_KEY); }
+
+function cleanPlayerRoster(value) {
+  if (!Array.isArray(value)) return [];
+  const names = value
+    .filter(name => typeof name === 'string' && name.trim() && name.trim().length <= 20)
+    .map(name => name.trim());
+  return [...new Set(names)].slice(0, 50);
+}
+
+export function loadPlayerRoster(storage = localStorage) {
+  try {
+    const raw = storage.getItem(PLAYER_ROSTER_KEY);
+    return raw === null ? [] : cleanPlayerRoster(JSON.parse(raw));
+  } catch { return []; }
+}
+
+export function rememberPlayers(players, storage = localStorage) {
+  const validPlayers = validateNames(players);
+  const roster = cleanPlayerRoster([...loadPlayerRoster(storage), ...validPlayers]);
+  storage.setItem(PLAYER_ROSTER_KEY, JSON.stringify(roster));
+  return roster;
+}
+
+function isValidSavedGame(record) {
+  if (!record || typeof record.id !== 'string' || typeof record.savedAt !== 'string') return false;
+  try { validateNames(record.players); } catch { return false; }
+  if (!Array.isArray(record.rounds) || !Array.isArray(record.chips) || record.chips.length !== 4) return false;
+  if (record.chips.some(count => !Number.isSafeInteger(count) || Math.abs(count) > CHIP_LIMIT)) return false;
+  return record.rounds.every(round => Array.isArray(round.scores) && round.scores.length === 4 && round.scores.every(score => Number.isSafeInteger(score) && Math.abs(score) <= LIMIT) && round.scores.reduce((a, b) => a + b, 0) === 0 && Number.isInteger(round.autoIndex) && round.autoIndex >= 0 && round.autoIndex <= 3);
+}
+
+export function loadSavedGames(storage = localStorage) {
+  try {
+    const raw = storage.getItem(SAVED_GAMES_KEY);
+    if (raw === null) return [];
+    const records = JSON.parse(raw);
+    return Array.isArray(records) ? records.filter(isValidSavedGame).slice(0, 30) : [];
+  } catch { return []; }
+}
+
+export function saveCompletedGame(game, storage = localStorage) {
+  if (!game || !Array.isArray(game.rounds) || game.rounds.length === 0) throw new Error('結果を1回以上登録してから保存してください。');
+  const id = typeof game.archiveId === 'string' && game.archiveId ? game.archiveId : `${Date.now()}`;
+  const record = {
+    id,
+    savedAt: new Date().toISOString(),
+    players: validateNames(game.players),
+    rounds: game.rounds.map(round => ({ scores: [...round.scores], autoIndex: round.autoIndex })),
+    chips: [...game.chips]
+  };
+  if (!isValidSavedGame(record)) throw new Error('保存する対局データを確認してください。');
+  const records = [record, ...loadSavedGames(storage).filter(item => item.id !== id)].slice(0, 30);
+  storage.setItem(SAVED_GAMES_KEY, JSON.stringify(records));
+  return record;
+}

@@ -1,9 +1,11 @@
 import { completeRound, getTotals, getRanks, getChipPoints, getFinalTotals, parseChipCount, formatScore, validateNames } from './scoring.mjs';
-import { loadGame, saveGame, removeGame } from './storage.mjs';
+import { loadGame, saveGame, removeGame, loadPlayerRoster, rememberPlayers, loadSavedGames, saveCompletedGame } from './storage.mjs';
 
 const $ = selector => document.querySelector(selector);
 const colors = ['#25826d', '#447fbb', '#b9852c', '#8b6caf'];
 let game = null;
+let playerRoster = loadPlayerRoster();
+let savedGames = loadSavedGames();
 let recoveryNeeded = false;
 const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 const tone = value => value > 0 ? 'positive' : value < 0 ? 'negative' : '';
@@ -28,6 +30,8 @@ function commit(nextGame) {
 function render() {
   $('#setup').hidden = Boolean(game);
   $('#game').hidden = !game;
+  renderPlayerRoster();
+  renderSavedGames();
   if (!game) return;
   const totals = getTotals(game.rounds);
   const ranks = getRanks(totals);
@@ -38,11 +42,33 @@ function render() {
   $('#input-status').textContent = '0 / 3人 入力済み';
   $('#score-error').textContent = '';
   $('#history-head').innerHTML = `<tr><th scope="col">回</th>${game.players.map(name => `<th scope="col">${escapeHtml(name)}</th>`).join('')}</tr>`;
-  $('#history-body').innerHTML = game.rounds.map((round, index) => `<tr><th scope="row">${index + 1}</th>${round.scores.map((score, i) => `<td><strong class="round-result ${tone(score)}">${formatScore(score, true)}</strong>${i === round.autoIndex ? '<span class="auto-tag">自動</span>' : ''}</td>`).join('')}</tr>`).join('');
+  $('#history-body').innerHTML = game.rounds.map((round, index) => `<tr id="${index === game.rounds.length - 1 ? 'latest-round-row' : ''}" class="${index === game.rounds.length - 1 ? 'latest-round' : ''}"><th scope="row">${index + 1}</th>${round.scores.map((score, i) => `<td><strong class="round-result ${tone(score)}">${formatScore(score, true)}</strong>${i === round.autoIndex ? '<span class="auto-tag">自動</span>' : ''}</td>`).join('')}</tr>`).join('');
   $('#history-foot').innerHTML = `<tr><th scope="row">現在累計</th>${totals.map(total => `<td class="${tone(total)}">${formatScore(total, true)}</td>`).join('')}</tr>`;
   renderChipSection(totals);
   $('.table-wrap').hidden = game.rounds.length === 0;
   $('#empty-history').hidden = game.rounds.length !== 0;
+  updateSaveResultButton();
+}
+
+function renderPlayerRoster() {
+  $('#player-roster').hidden = playerRoster.length === 0;
+  $('#player-roster-list').innerHTML = playerRoster.map((name, index) => `<button type="button" class="roster-name" data-roster-index="${index}">${escapeHtml(name)}</button>`).join('');
+}
+
+function renderSavedGames() {
+  $('#saved-games-section').hidden = savedGames.length === 0;
+  $('#saved-games-list').innerHTML = savedGames.map(record => {
+    const date = new Date(record.savedAt);
+    const dateLabel = Number.isNaN(date.getTime()) ? '保存済み' : new Intl.DateTimeFormat('ja-JP', { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+    const finals = getFinalTotals(record.rounds, record.chips);
+    return `<article class="saved-game-card"><div class="saved-game-heading"><strong>${escapeHtml(dateLabel)}</strong><span>${record.rounds.length}回</span></div><div class="saved-game-scores">${record.players.map((name, index) => `<div><span>${escapeHtml(name)}</span><b class="${tone(finals[index])}">${formatScore(finals[index], true)}</b></div>`).join('')}</div></article>`;
+  }).join('');
+}
+
+function updateSaveResultButton() {
+  const button = $('#save-result-button');
+  button.disabled = game.rounds.length === 0;
+  button.textContent = game.archiveId ? '保存した結果を更新' : 'この対局結果を保存';
 }
 
 function renderChipSection(totals) {
@@ -68,10 +94,30 @@ $('#setup-form').addEventListener('submit', event => {
   try {
     const players = validateNames([...new FormData(event.currentTarget).values()]);
     if (recoveryNeeded && !window.confirm('読み込めなかった保存データを、新しいゲームで上書きしますか？')) return;
+    playerRoster = rememberPlayers(players);
     commit({ version: 2, players, rounds: [], chips: [0, 0, 0, 0] });
     $('#setup-error').textContent = '';
     $('#score-inputs input').focus();
   } catch (error) { $('#setup-error').textContent = error.message; }
+});
+
+$('#player-roster-list').addEventListener('click', event => {
+  const button = event.target.closest('[data-roster-index]');
+  if (!button) return;
+  const name = playerRoster[Number(button.dataset.rosterIndex)];
+  const inputs = [...$('#setup-form').querySelectorAll('input[name^="player"]')];
+  if (inputs.some(input => input.value.trim() === name)) {
+    $('#setup-error').textContent = `${name}さんは選択済みです。`;
+    return;
+  }
+  const target = inputs.find(input => !input.value.trim());
+  if (!target) {
+    $('#setup-error').textContent = '4人分入力済みです。変更する欄を空にしてから選んでください。';
+    return;
+  }
+  target.value = name;
+  $('#setup-error').textContent = '';
+  (inputs.find(input => !input.value.trim()) || target).focus();
 });
 
 function updateInputStatus() {
@@ -107,13 +153,27 @@ function registerRound(values) {
   const round = completeRound(values);
   commit({ ...game, rounds: [...game.rounds, round] });
   $('#success').textContent = `第${game.rounds.length}回を登録しました。${game.players[round.autoIndex]}：${formatScore(round.scores[round.autoIndex], true)}（自動計算）`;
-  $('#score-inputs input').focus();
+  requestAnimationFrame(() => $('#latest-round-row')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' }));
   return { round: game.rounds.length, scores: round.scores.map(score => score / 10), totals: getTotals(game.rounds).map(score => score / 10) };
 }
 $('#score-form').addEventListener('submit', event => {
   event.preventDefault();
   try { registerRound([...new FormData(event.currentTarget).values()]); }
   catch (error) { $('#score-error').textContent = error.message; $('#success').textContent = ''; }
+});
+
+$('#save-result-button').addEventListener('click', () => {
+  try {
+    const record = saveCompletedGame(game);
+    game = { ...game, archiveId: record.id };
+    saveGame(game);
+    savedGames = loadSavedGames();
+    renderSavedGames();
+    updateSaveResultButton();
+    $('#save-result-status').textContent = 'この対局結果を保存しました。ゲームをリセットしても残ります。';
+  } catch (error) {
+    $('#save-result-status').textContent = error.message || '対局結果を保存できませんでした。';
+  }
 });
 
 $('#chip-inputs').addEventListener('input', event => {

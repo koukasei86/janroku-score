@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { completeRound, getRemainingScores, getTotals, getRanks, getChipPoints, getFinalTotals, parseChipCount, formatScore, validateNames } from '../dist/scoring.mjs';
-import { loadGame, saveGame, removeGame, STORAGE_KEY } from '../dist/storage.mjs';
+import { loadGame, saveGame, removeGame, loadPlayerRoster, rememberPlayers, loadSavedGames, saveCompletedGame, STORAGE_KEY, PLAYER_ROSTER_KEY, SAVED_GAMES_KEY } from '../dist/storage.mjs';
 
 test('4人の名前・空白除去・不足時のエラー', () => {
   assert.deepEqual(validateNames([' A ', 'B', 'C', 'D']), ['A', 'B', 'C', 'D']);
@@ -58,4 +58,20 @@ test('保存・復元・旧形式の変換・リセット・破損データ', ()
   assert.deepEqual(loadGame(storage).rounds[0].scores,[-200,-100,100,200]);
   storage.setItem(STORAGE_KEY,'{broken'); assert.throws(()=>loadGame(storage));
   storage.setItem(STORAGE_KEY,JSON.stringify({...game, rounds:[{scores:[0,0,0,1],autoIndex:3}]})); assert.throws(()=>loadGame(storage));
+});
+test('プレイヤー一覧と終了した対局を別に保存', () => {
+  const map = new Map();
+  const storage = { getItem:key=>map.get(key)??null, setItem:(key,value)=>map.set(key,value), removeItem:key=>map.delete(key) };
+  assert.deepEqual(rememberPlayers([' A ','B','C','D'], storage), ['A','B','C','D']);
+  assert.deepEqual(rememberPlayers(['A','E','F','G'], storage), ['A','B','C','D','E','F','G']);
+  assert.deepEqual(loadPlayerRoster(storage), ['A','B','C','D','E','F','G']);
+  const game = { version:2, players:['A','B','C','D'], rounds:[completeRound(['-20','-10','10',''])], chips:[3,-1,0,-2] };
+  const record = saveCompletedGame(game, storage);
+  assert.equal(loadSavedGames(storage).length, 1);
+  assert.equal(loadSavedGames(storage)[0].id, record.id);
+  assert.equal(map.has(PLAYER_ROSTER_KEY), true);
+  assert.equal(map.has(SAVED_GAMES_KEY), true);
+  removeGame(storage);
+  assert.equal(loadGame(storage), null);
+  assert.equal(loadSavedGames(storage).length, 1);
 });

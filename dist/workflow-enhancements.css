@@ -1,0 +1,44 @@
+.player-roster {
+  margin-top: 22px;
+  padding: 16px;
+  border: 1px solid #c8d8d0;
+  border-radius: 12px;
+  background: #f3f7f5;
+}
+.player-roster > strong { display: block; font-size: 1rem; color: #173f34; }
+.player-roster > p { margin-top: 5px; color: var(--muted); font-size: .82rem; }
+.player-roster-list { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 12px; }
+.roster-name { min-height: 44px; padding: 8px 15px; border: 1px solid #9fb9ad; border-radius: 999px; background: white; color: #174b3d; font-size: 1rem; font-weight: 750; }
+.roster-name:active { background: #dfeae5; }
+
+#history-table tbody tr.latest-round th,
+#history-table tbody tr.latest-round td { background: #fff0bd; }
+#history-table tbody tr.latest-round { box-shadow: inset 4px 0 #d3a321; }
+
+.chip-section {
+  border: 2px solid #d7ae48;
+  background: #fff9e9;
+  box-shadow: 0 8px 24px rgb(80 64 20 / 8%);
+}
+.chip-section .pill { background: #f1dfaa; color: #5f4b16; }
+.save-result-box { margin-top: 18px; padding-top: 18px; border-top: 1px solid #dfcd98; }
+.save-result-box .primary:disabled { cursor: not-allowed; background: #9eaaa5; }
+.save-result-status { min-height: 22px; margin-top: 9px; color: #24634f; font-size: .86rem; line-height: 1.6; }
+
+.saved-games-section { margin-top: 34px; padding-top: 28px; border-top: 1px solid var(--border); }
+.saved-games-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.saved-game-card { padding: 17px; border: 1px solid var(--border); border-radius: 12px; background: white; }
+.saved-game-heading { display: flex; justify-content: space-between; gap: 8px; align-items: center; margin-bottom: 14px; }
+.saved-game-heading strong { font-size: .95rem; }
+.saved-game-heading span { color: var(--muted); font-size: .8rem; }
+.saved-game-scores { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+.saved-game-scores div { min-width: 0; padding: 9px 5px; border-radius: 7px; background: #f4f7f5; text-align: center; }
+.saved-game-scores span { display: block; overflow-wrap: anywhere; font-size: .82rem; font-weight: 700; }
+.saved-game-scores b { display: block; margin-top: 5px; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+
+@media (max-width: 640px) {
+  .player-roster { margin-top: 18px; padding: 14px; }
+  .saved-games-list { grid-template-columns: 1fr; }
+  .saved-games-section { margin-top: 28px; }
+  .saved-game-card { padding: 14px; }
+}

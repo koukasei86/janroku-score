@@ -12,12 +12,13 @@
   <link rel="icon" type="image/svg+xml" href="./icon.svg">
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="stylesheet" href="./styles.css?v=10">
-  <link rel="stylesheet" href="./iphone.css?v=10">
-  <link rel="stylesheet" href="./reset-button.css?v=10">
-  <link rel="stylesheet" href="./install-guide.css?v=10">
-  <link rel="stylesheet" href="./chips-and-readability.css?v=10">
-  <script type="module" src="./app.mjs?v=10"></script>
+  <link rel="stylesheet" href="./styles.css?v=11">
+  <link rel="stylesheet" href="./iphone.css?v=11">
+  <link rel="stylesheet" href="./reset-button.css?v=11">
+  <link rel="stylesheet" href="./install-guide.css?v=11">
+  <link rel="stylesheet" href="./chips-and-readability.css?v=11">
+  <link rel="stylesheet" href="./workflow-enhancements.css?v=11">
+  <script type="module" src="./app.mjs?v=11"></script>
 </head>
 <body>
   <header class="site-header"><div class="brand"><span class="brand-mark" aria-hidden="true">雀</span><div><strong>雀録<span class="brand-reading">じゃんろく</span></strong><small>麻雀スコア</small></div></div><span class="version">VER. 1.0</span></header>
@@ -40,6 +41,7 @@
       <span class="eyebrow">NEW GAME</span>
       <h1>今日の4人を登録</h1>
       <p class="muted">名前を入力して、対局を始めましょう。</p>
+      <div id="player-roster" class="player-roster" hidden><strong>登録済みの名前から選ぶ</strong><p>名前をタップすると、空いている欄へ入ります。</p><div id="player-roster-list" class="player-roster-list"></div></div>
       <form id="setup-form" novalidate>
         <div class="name-grid">
           <label><span class="field-label"><i class="player-dot p0"></i>プレイヤー1</span><input name="player0" aria-label="プレイヤー1の名前" maxlength="20" placeholder="Aさん" autocomplete="off" required></label>
@@ -76,14 +78,16 @@
         <div id="empty-history" class="empty-state"><span aria-hidden="true">—</span><strong>最初の結果を待っています</strong><p>登録した結果が、ここに積み重なります。</p></div>
       </section>
       <section class="panel chip-section" aria-labelledby="chip-title">
-        <div class="section-heading"><div><span class="eyebrow">FINAL TOTAL</span><h2 id="chip-title">チップ精算</h2></div><span class="pill">1枚 = 5点</span></div>
+        <div class="section-heading"><div><span class="eyebrow">FINAL RESULT</span><h2 id="chip-title">最終結果・チップ精算</h2></div><span class="pill">1枚 = 5点</span></div>
         <p class="muted chip-instruction">各プレイヤーのチップ枚数を入力すると、現在累計に加えた最終合計を自動表示します。</p>
         <div id="chip-inputs" class="chip-grid"></div>
         <div class="chip-meta"><span id="chip-balance"></span><span>入力内容は自動保存</span></div>
         <p id="chip-error" class="form-error" role="alert"></p>
+        <div class="save-result-box"><button id="save-result-button" class="primary wide" type="button">この対局結果を保存</button><p id="save-result-status" class="save-result-status" role="status" aria-live="polite"></p></div>
       </section>
       <footer class="game-footer"><span>このブラウザに自動保存</span><button id="reset-button" class="reset-button" type="button">ゲームをリセット</button></footer>
     </div>
+    <section id="saved-games-section" class="saved-games-section" aria-labelledby="saved-games-title" hidden><div class="section-heading"><div><span class="eyebrow">SAVED GAMES</span><h2 id="saved-games-title">保存した対局</h2></div><span class="muted">この端末に保存</span></div><div id="saved-games-list" class="saved-games-list"></div></section>
     <footer class="app-footer">雀録 <span>·</span> 4人の勝負を、すっきり記録。</footer>
   </main>
   <dialog id="reset-dialog" aria-labelledby="reset-title" aria-describedby="reset-description"><h2 id="reset-title">新しいゲームを始めますか？</h2><p id="reset-description">現在のプレイヤー名・対局履歴・累計をすべて削除します。この操作は取り消せません。</p><div class="dialog-actions"><button id="cancel-reset" class="secondary" autofocus>戻る</button><button id="confirm-reset" class="danger">リセットする</button></div></dialog>
