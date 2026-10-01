@@ -16,12 +16,12 @@
 #history-table tbody tr.latest-round { box-shadow: inset 4px 0 #d3a321; }
 
 .chip-section {
-  border: 2px solid #d7ae48;
-  background: #fff9e9;
-  box-shadow: 0 8px 24px rgb(80 64 20 / 8%);
+  border: 2px solid #d8a4ad;
+  background: #fff3f5;
+  box-shadow: 0 8px 24px rgb(103 49 61 / 8%);
 }
-.chip-section .pill { background: #f1dfaa; color: #5f4b16; }
-.save-result-box { margin-top: 18px; padding-top: 18px; border-top: 1px solid #dfcd98; }
+.chip-section .pill { background: #f2dce1; color: #70414b; }
+.save-result-box { margin-top: 18px; padding-top: 18px; border-top: 1px solid #dfbcc4; }
 .save-result-box .primary:disabled { cursor: not-allowed; background: #9eaaa5; }
 .save-result-status { min-height: 22px; margin-top: 9px; color: #24634f; font-size: .86rem; line-height: 1.6; }
 
