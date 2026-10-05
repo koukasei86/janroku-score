@@ -1,0 +1,79 @@
+/* 白い面積と画面輝度を抑えた、長時間でも目が疲れにくい配色。 */
+:root {
+  background: #d8e0dc;
+  color: #18372f;
+  --muted: #536961;
+  --border: #bac9c2;
+}
+
+html,
+body { background: #d8e0dc; }
+
+.site-header {
+  background: #ced9d4;
+  border-bottom-color: #afc0b8;
+}
+
+.panel,
+.score-card,
+.table-wrap,
+.saved-game-card {
+  background: #edf1ed;
+  border-color: #b8c7c0;
+}
+
+input {
+  background: #f5f4ed;
+  border-color: #aebfb7;
+}
+
+input::placeholder { color: #74877f; }
+.score-control input::placeholder { color: #74877f; }
+
+.count,
+.pill { background: #dce6e1; color: #31564a; }
+.rank { background: #e5ebe7; border-color: #b8c7c0; color: #435c53; }
+.score-card.leader { background: #16493c; border-color: #16493c; }
+
+.player-roster,
+.install-guide {
+  background: #e1e9e4;
+  border-color: #aec2b8;
+}
+.roster-name { background: #f0f2ed; border-color: #91aa9f; }
+
+.table-wrap { background: #edf1ed; }
+#history-table tbody th,
+#history-table tbody td { background: #f0f2ed; }
+#history-table tbody tr.latest-round th,
+#history-table tbody tr.latest-round td { background: #e8ddb0; }
+#history-table thead th { background: #bdcec5; }
+#history-table tfoot th,
+#history-table tfoot td { background: #adc5b9; }
+
+.empty-state {
+  background: #e6ece8;
+  border-color: #aebfb7;
+}
+
+.chip-section {
+  background: #efe1e4;
+  border-color: #c58f9a;
+  box-shadow: 0 8px 24px rgb(74 45 52 / 9%);
+}
+.chip-section .pill { background: #dfc6cc; color: #613943; }
+.chip-card { background: #f2f1ec; border-color: #b9c5bf; }
+.save-result-box { border-top-color: #cfabb3; }
+
+.saved-game-scores div { background: #dde6e1; }
+.secondary { background: #edf1ed; border-color: #aebfb7; }
+dialog { background: #edf1ed; }
+
+.reset-button { background: #f2e8e5; }
+.reset-button:hover { background: #ecdcd8; }
+
+@media (max-width: 480px) {
+  html,
+  body { background: #d8e0dc; }
+  .site-header { background: rgb(206 217 212 / 96%); }
+}
