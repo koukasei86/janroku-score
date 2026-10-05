@@ -1,50 +1,50 @@
 /* 白い面積と画面輝度を抑えた、長時間でも目が疲れにくい配色。 */
 :root {
-  background: #d8e0dc;
+  background: #c5d0cb;
   color: #18372f;
   --muted: #536961;
-  --border: #bac9c2;
+  --border: #9fb2a9;
 }
 
 html,
-body { background: #d8e0dc; }
+body { background: #c5d0cb; }
 
 .site-header {
-  background: #ced9d4;
-  border-bottom-color: #afc0b8;
+  background: #b9c8c1;
+  border-bottom-color: #96aba1;
 }
 
 .panel,
 .score-card,
 .table-wrap,
 .saved-game-card {
-  background: #edf1ed;
-  border-color: #b8c7c0;
+  background: #dce4df;
+  border-color: #9fb2a9;
 }
 
 input {
-  background: #f5f4ed;
-  border-color: #aebfb7;
+  background: #e8e9e1;
+  border-color: #91a79d;
 }
 
 input::placeholder { color: #74877f; }
 .score-control input::placeholder { color: #74877f; }
 
 .count,
-.pill { background: #dce6e1; color: #31564a; }
-.rank { background: #e5ebe7; border-color: #b8c7c0; color: #435c53; }
+.pill { background: #cbd8d2; color: #294d42; }
+.rank { background: #d5dfda; border-color: #9fb2a9; color: #354f46; }
 .score-card.leader { background: #16493c; border-color: #16493c; }
 
 .player-roster,
 .install-guide {
-  background: #e1e9e4;
-  border-color: #aec2b8;
+  background: #d2ddd7;
+  border-color: #97afa4;
 }
-.roster-name { background: #f0f2ed; border-color: #91aa9f; }
+.roster-name { background: #e2e7e2; border-color: #829f92; }
 
-.table-wrap { background: #edf1ed; }
+.table-wrap { background: #dce4df; }
 #history-table tbody th,
-#history-table tbody td { background: #f0f2ed; }
+#history-table tbody td { background: #e2e7e3; }
 #history-table tbody tr.latest-round th,
 #history-table tbody tr.latest-round td { background: #e8ddb0; }
 #history-table thead th { background: #bdcec5; }
@@ -52,28 +52,28 @@ input::placeholder { color: #74877f; }
 #history-table tfoot td { background: #adc5b9; }
 
 .empty-state {
-  background: #e6ece8;
-  border-color: #aebfb7;
+  background: #d6e0db;
+  border-color: #96aba1;
 }
 
 .chip-section {
-  background: #efe1e4;
-  border-color: #c58f9a;
+  background: #e3cfd4;
+  border-color: #b87784;
   box-shadow: 0 8px 24px rgb(74 45 52 / 9%);
 }
-.chip-section .pill { background: #dfc6cc; color: #613943; }
-.chip-card { background: #f2f1ec; border-color: #b9c5bf; }
+.chip-section .pill { background: #d4b5bd; color: #56323a; }
+.chip-card { background: #e5e5de; border-color: #9eaea6; }
 .save-result-box { border-top-color: #cfabb3; }
 
-.saved-game-scores div { background: #dde6e1; }
-.secondary { background: #edf1ed; border-color: #aebfb7; }
-dialog { background: #edf1ed; }
+.saved-game-scores div { background: #cad7d1; }
+.secondary { background: #dce4df; border-color: #91a79d; }
+dialog { background: #dce4df; }
 
-.reset-button { background: #f2e8e5; }
-.reset-button:hover { background: #ecdcd8; }
+.reset-button { background: #e5d6d2; }
+.reset-button:hover { background: #dcc9c4; }
 
 @media (max-width: 480px) {
   html,
-  body { background: #d8e0dc; }
-  .site-header { background: rgb(206 217 212 / 96%); }
+  body { background: #c5d0cb; }
+  .site-header { background: rgb(185 200 193 / 97%); }
 }
