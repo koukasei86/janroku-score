@@ -1,13 +1,13 @@
 /* 白い面積と画面輝度を抑えた、長時間でも目が疲れにくい配色。 */
 :root {
-  background: #c5d0cb;
+  background: #aebdb6;
   color: #18372f;
   --muted: #536961;
   --border: #9fb2a9;
 }
 
 html,
-body { background: #c5d0cb; }
+body { background: #aebdb6; }
 
 .site-header {
   background: #b9c8c1;
@@ -74,6 +74,6 @@ dialog { background: #dce4df; }
 
 @media (max-width: 480px) {
   html,
-  body { background: #c5d0cb; }
+  body { background: #aebdb6; }
   .site-header { background: rgb(185 200 193 / 97%); }
 }
