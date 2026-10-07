@@ -1,4 +1,4 @@
-/* 白い面積と画面輝度を抑えた、長時間でも目が疲れにくい配色。 */
+/* 外側は落ち着いた濃色、操作するカード内は明るくして境界をはっきり見せる。 */
 :root {
   background: #aebdb6;
   color: #18372f;
@@ -18,12 +18,12 @@ body { background: #aebdb6; }
 .score-card,
 .table-wrap,
 .saved-game-card {
-  background: #dce4df;
+  background: #f7faf8;
   border-color: #9fb2a9;
 }
 
 input {
-  background: #e8e9e1;
+  background: #ffffff;
   border-color: #91a79d;
 }
 
@@ -37,14 +37,14 @@ input::placeholder { color: #74877f; }
 
 .player-roster,
 .install-guide {
-  background: #d2ddd7;
+  background: #f2f6f3;
   border-color: #97afa4;
 }
-.roster-name { background: #e2e7e2; border-color: #829f92; }
+.roster-name { background: #ffffff; border-color: #829f92; }
 
-.table-wrap { background: #dce4df; }
+.table-wrap { background: #f7faf8; }
 #history-table tbody th,
-#history-table tbody td { background: #e2e7e3; }
+#history-table tbody td { background: #ffffff; }
 #history-table tbody tr.latest-round th,
 #history-table tbody tr.latest-round td { background: #e8ddb0; }
 #history-table thead th { background: #bdcec5; }
@@ -52,7 +52,7 @@ input::placeholder { color: #74877f; }
 #history-table tfoot td { background: #adc5b9; }
 
 .empty-state {
-  background: #d6e0db;
+  background: #f7faf8;
   border-color: #96aba1;
 }
 
@@ -62,12 +62,12 @@ input::placeholder { color: #74877f; }
   box-shadow: 0 8px 24px rgb(74 45 52 / 9%);
 }
 .chip-section .pill { background: #d4b5bd; color: #56323a; }
-.chip-card { background: #e5e5de; border-color: #9eaea6; }
+.chip-card { background: #ffffff; border-color: #9eaea6; }
 .save-result-box { border-top-color: #cfabb3; }
 
-.saved-game-scores div { background: #cad7d1; }
-.secondary { background: #dce4df; border-color: #91a79d; }
-dialog { background: #dce4df; }
+.saved-game-scores div { background: #ffffff; }
+.secondary { background: #f7faf8; border-color: #91a79d; }
+dialog { background: #f7faf8; }
 
 .reset-button { background: #e5d6d2; }
 .reset-button:hover { background: #dcc9c4; }
