@@ -77,3 +77,120 @@ dialog { background: #f7faf8; }
   body { background: #aebdb6; }
   .site-header { background: rgb(185 200 193 / 97%); }
 }
+
+/* ブラックテーマ試作：面を黒系、文字と入力値を白系で統一する。 */
+:root {
+  background: #070a09;
+  color: #f5f7f6;
+  --green: #1d6a55;
+  --muted: #c2ccc7;
+  --border: #3b4b44;
+  --positive: #62d9b3;
+  --negative: #ff8d7e;
+}
+
+html,
+body { background: #070a09; color: #f5f7f6; }
+
+.site-header {
+  background: #0d1210;
+  border-bottom-color: #34443d;
+}
+
+.panel,
+.score-card,
+.table-wrap,
+.saved-game-card,
+.empty-state,
+dialog {
+  background: #121816;
+  border-color: #3b4b44;
+  color: #f5f7f6;
+}
+
+input {
+  background: #080c0a;
+  border-color: #53685f;
+  color: #ffffff;
+  caret-color: #ffffff;
+}
+input::placeholder,
+.score-control input::placeholder { color: #9eaaa4; }
+
+.count,
+.pill,
+.rank {
+  background: #25302c;
+  border-color: #53685f;
+  color: #f2f5f3;
+}
+
+.score-card.leader {
+  background: #164d3f;
+  border-color: #2f8a70;
+  border-top-color: #e1c46f;
+}
+
+.player-roster,
+.install-guide {
+  background: #121816;
+  border-color: #3b4b44;
+}
+.player-roster > strong { color: #ffffff; }
+.roster-name {
+  background: #1b2420;
+  border-color: #63786f;
+  color: #ffffff;
+}
+.roster-name:active { background: #293730; }
+
+.table-wrap { background: #121816; }
+#history-table thead th {
+  background: #26322d;
+  color: #ffffff;
+  border-bottom-color: #46584f;
+}
+#history-table tbody th,
+#history-table tbody td {
+  background: #101513;
+  border-bottom-color: #34423c;
+}
+#history-table tbody th { color: #d4dcd8; }
+#history-table tbody tr.latest-round th,
+#history-table tbody tr.latest-round td { background: #403719; }
+#history-table tfoot th,
+#history-table tfoot td {
+  background: #284238;
+  border-top-color: #53685f;
+}
+#history-table tfoot th { color: #ffffff; }
+.auto-tag { color: #cbd6d0; }
+
+.chip-section {
+  background: #211519;
+  border-color: #9c5d6b;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 24%);
+}
+.chip-section .pill { background: #4a2b33; color: #ffffff; }
+.chip-card { background: #110d0e; border-color: #71545b; }
+.chip-sign-button { color: #ffffff; }
+.chip-points,
+.final-total { color: #d8dfdc; }
+.save-result-box { border-top-color: #71545b; }
+.save-result-status { color: #75deb9; }
+
+.saved-game-scores div { background: #1b2420; }
+.secondary { background: #1b2420; border-color: #63786f; color: #ffffff; }
+dialog p { color: #d4dcd8; }
+.setup-rule strong { color: #ffffff; }
+.text-button { color: #d4dcd8; }
+
+.reset-button { background: #3a2222; color: #ffffff; border-color: #815b59; }
+.reset-button:hover { background: #4b2928; }
+.error { background: #341816; color: #ffb3aa; border-color: #824d47; }
+
+@media (max-width: 480px) {
+  html,
+  body { background: #070a09; }
+  .site-header { background: rgb(13 18 16 / 97%); }
+}
