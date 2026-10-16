@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { completeRound, getRemainingScores, getTotals, getRanks, getChipPoints, getFinalTotals, parseChipCount, formatScore, validateNames } from '../dist/scoring.mjs';
-import { loadGame, saveGame, removeGame, loadPlayerRoster, rememberPlayers, loadSavedGames, saveCompletedGame, STORAGE_KEY, PLAYER_ROSTER_KEY, SAVED_GAMES_KEY } from '../dist/storage.mjs';
+import { loadGame, saveGame, removeGame, loadPlayerRoster, rememberPlayers, loadSavedGames, saveCompletedGame, removeSavedGame, STORAGE_KEY, PLAYER_ROSTER_KEY, SAVED_GAMES_KEY } from '../dist/storage.mjs';
 
 test('4人の名前・空白除去・不足時のエラー', () => {
   assert.deepEqual(validateNames([' A ', 'B', 'C', 'D']), ['A', 'B', 'C', 'D']);
@@ -71,7 +71,12 @@ test('プレイヤー一覧と終了した対局を別に保存', () => {
   assert.equal(loadSavedGames(storage)[0].id, record.id);
   assert.equal(map.has(PLAYER_ROSTER_KEY), true);
   assert.equal(map.has(SAVED_GAMES_KEY), true);
+  const updated = saveCompletedGame({ ...game, archiveId: record.id, chips:[2,-1,0,-1] }, storage);
+  assert.equal(updated.savedAt, record.savedAt);
+  assert.deepEqual(loadSavedGames(storage)[0].chips, [2,-1,0,-1]);
   removeGame(storage);
   assert.equal(loadGame(storage), null);
   assert.equal(loadSavedGames(storage).length, 1);
+  assert.deepEqual(removeSavedGame(record.id, storage), []);
+  assert.equal(loadSavedGames(storage).length, 0);
 });

@@ -81,9 +81,10 @@ export function loadSavedGames(storage = localStorage) {
 export function saveCompletedGame(game, storage = localStorage) {
   if (!game || !Array.isArray(game.rounds) || game.rounds.length === 0) throw new Error('結果を1回以上登録してから保存してください。');
   const id = typeof game.archiveId === 'string' && game.archiveId ? game.archiveId : `${Date.now()}`;
+  const existing = loadSavedGames(storage).find(item => item.id === id);
   const record = {
     id,
-    savedAt: new Date().toISOString(),
+    savedAt: existing?.savedAt || new Date().toISOString(),
     players: validateNames(game.players),
     rounds: game.rounds.map(round => ({ scores: [...round.scores], autoIndex: round.autoIndex })),
     chips: [...game.chips]
@@ -92,4 +93,11 @@ export function saveCompletedGame(game, storage = localStorage) {
   const records = [record, ...loadSavedGames(storage).filter(item => item.id !== id)].slice(0, 30);
   storage.setItem(SAVED_GAMES_KEY, JSON.stringify(records));
   return record;
+}
+
+export function removeSavedGame(id, storage = localStorage) {
+  if (typeof id !== 'string' || !id) throw new Error('削除する保存済み対局を確認してください。');
+  const records = loadSavedGames(storage).filter(item => item.id !== id);
+  storage.setItem(SAVED_GAMES_KEY, JSON.stringify(records));
+  return records;
 }

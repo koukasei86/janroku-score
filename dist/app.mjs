@@ -1,14 +1,17 @@
 import { completeRound, getTotals, getRanks, getChipPoints, getFinalTotals, parseChipCount, formatScore, validateNames } from './scoring.mjs';
-import { loadGame, saveGame, removeGame, loadPlayerRoster, rememberPlayers, loadSavedGames, saveCompletedGame } from './storage.mjs';
+import { loadGame, saveGame, removeGame, loadPlayerRoster, rememberPlayers, loadSavedGames, saveCompletedGame, removeSavedGame } from './storage.mjs';
 
 const $ = selector => document.querySelector(selector);
 const colors = ['#25826d', '#447fbb', '#b9852c', '#8b6caf'];
 let game = null;
 let playerRoster = loadPlayerRoster();
 let savedGames = loadSavedGames();
+let editingRoundIndex = null;
 let recoveryNeeded = false;
 const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 const tone = value => value > 0 ? 'positive' : value < 0 ? 'negative' : '';
+const inputTone = value => String(value).trim().startsWith('-') ? 'negative-input' : '';
+const scoreInputValue = (round, index) => index === round.autoIndex ? '' : String(round.scores[index] / 10);
 
 function storageWarning(message) {
   $('#storage-warning').textContent = message;
@@ -37,12 +40,18 @@ function render() {
   const ranks = getRanks(totals);
   $('#round-count').textContent = `${game.rounds.length}回 終了`;
   $('#scoreboard').innerHTML = game.players.map((name, i) => `<article class="score-card ${ranks[i] === 1 && game.rounds.length ? 'leader' : ''}" style="--player:${colors[i]}"><div class="card-top"><span class="player-name">${escapeHtml(name)}</span><span class="rank">${ranks[i]}位</span></div><strong class="total ${tone(totals[i])}">${formatScore(totals[i], true)}</strong><span class="total-caption">累計収支</span></article>`).join('');
-  $('#entry-title').textContent = `第${game.rounds.length + 1}回の結果`;
-  $('#score-inputs').innerHTML = game.players.map((name, i) => `<label><span class="field-label"><i class="player-dot p${i}"></i>${escapeHtml(name)}</span><span class="score-control"><input name="score${i}" aria-label="${escapeHtml(name)}の収支" type="text" inputmode="decimal" maxlength="12" placeholder="例 −20" autocomplete="off" spellcheck="false" aria-describedby="score-error"><button class="sign-button" type="button" data-index="${i}" aria-label="${escapeHtml(name)}の収支の正負を切り替え">±</button></span></label>`).join('');
-  $('#input-status').textContent = '0 / 3人 入力済み';
+  const editingRound = editingRoundIndex === null ? null : game.rounds[editingRoundIndex];
+  $('#entry-title').textContent = editingRound ? `第${editingRoundIndex + 1}回を修正` : `第${game.rounds.length + 1}回の結果`;
+  $('#score-inputs').innerHTML = game.players.map((name, i) => {
+    const value = editingRound ? scoreInputValue(editingRound, i) : '';
+    return `<label><span class="field-label"><i class="player-dot p${i}"></i>${escapeHtml(name)}</span><span class="score-control"><input class="${inputTone(value)}" name="score${i}" aria-label="${escapeHtml(name)}の収支" type="text" inputmode="decimal" maxlength="12" value="${escapeHtml(value)}" data-previous="${escapeHtml(value)}" placeholder="例 −20" autocomplete="off" spellcheck="false" aria-describedby="score-error"><button class="sign-button" type="button" data-index="${i}" aria-label="${escapeHtml(name)}の収支の正負を切り替え">±</button></span></label>`;
+  }).join('');
+  $('#score-submit-button').innerHTML = editingRound ? '修正を保存 <span aria-hidden="true">✓</span>' : '結果を登録 <span aria-hidden="true">＋</span>';
+  $('#cancel-round-edit').hidden = !editingRound;
+  $('#input-status').textContent = editingRound ? '3 / 3人 入力済み（1人は自動計算）' : '0 / 3人 入力済み';
   $('#score-error').textContent = '';
   $('#history-head').innerHTML = `<tr><th scope="col">回</th>${game.players.map(name => `<th scope="col">${escapeHtml(name)}</th>`).join('')}</tr>`;
-  $('#history-body').innerHTML = game.rounds.map((round, index) => `<tr id="${index === game.rounds.length - 1 ? 'latest-round-row' : ''}" class="${index === game.rounds.length - 1 ? 'latest-round' : ''}"><th scope="row">${index + 1}</th>${round.scores.map((score, i) => `<td><strong class="round-result ${tone(score)}">${formatScore(score, true)}</strong>${i === round.autoIndex ? '<span class="auto-tag">自動</span>' : ''}</td>`).join('')}</tr>`).join('');
+  $('#history-body').innerHTML = game.rounds.map((round, index) => `<tr id="${index === game.rounds.length - 1 ? 'latest-round-row' : ''}" class="${index === game.rounds.length - 1 ? 'latest-round' : ''}"><th scope="row"><span class="round-number">${index + 1}</span><span class="round-actions"><button type="button" class="round-action edit-round" data-edit-round="${index}">修正</button><button type="button" class="round-action delete-round" data-delete-round="${index}">削除</button></span></th>${round.scores.map((score, i) => `<td><strong class="round-result ${tone(score)}">${formatScore(score, true)}</strong>${i === round.autoIndex ? '<span class="auto-tag">自動</span>' : ''}</td>`).join('')}</tr>`).join('');
   $('#history-foot').innerHTML = `<tr><th scope="row">現在累計</th>${totals.map(total => `<td class="${tone(total)}">${formatScore(total, true)}</td>`).join('')}</tr>`;
   renderChipSection(totals);
   $('.table-wrap').hidden = game.rounds.length === 0;
@@ -61,7 +70,8 @@ function renderSavedGames() {
     const date = new Date(record.savedAt);
     const dateLabel = Number.isNaN(date.getTime()) ? '保存済み' : new Intl.DateTimeFormat('ja-JP', { dateStyle: 'medium', timeStyle: 'short' }).format(date);
     const finals = getFinalTotals(record.rounds, record.chips);
-    return `<article class="saved-game-card"><div class="saved-game-heading"><strong>${escapeHtml(dateLabel)}</strong><span>${record.rounds.length}回</span></div><div class="saved-game-scores">${record.players.map((name, index) => `<div><span>${escapeHtml(name)}</span><b class="${tone(finals[index])}">${formatScore(finals[index], true)}</b></div>`).join('')}</div></article>`;
+    const historyRows = record.rounds.map((round, roundIndex) => `<tr><th>${roundIndex + 1}</th>${round.scores.map((score, index) => `<td class="${tone(score)}">${formatScore(score, true)}${index === round.autoIndex ? '<small>自動</small>' : ''}</td>`).join('')}</tr>`).join('');
+    return `<article class="saved-game-card"><div class="saved-game-heading"><strong>${escapeHtml(dateLabel)}</strong><span>${record.rounds.length}回</span></div><div class="saved-game-scores">${record.players.map((name, index) => `<div><span>${escapeHtml(name)}</span><b class="${tone(finals[index])}">${formatScore(finals[index], true)}</b></div>`).join('')}</div><details class="saved-game-details"><summary>対局履歴・チップを見る</summary><div class="saved-history-wrap"><table class="saved-history-table"><thead><tr><th>回</th>${record.players.map(name => `<th>${escapeHtml(name)}</th>`).join('')}</tr></thead><tbody>${historyRows}</tbody></table></div><p class="saved-chip-line">チップ：${record.players.map((name, index) => `${escapeHtml(name)} ${record.chips[index] > 0 ? '+' : ''}${record.chips[index]}枚`).join(' ／ ')}</p></details><div class="saved-game-actions"><button type="button" class="secondary" data-open-saved="${escapeHtml(record.id)}">この対局を開いて修正</button><button type="button" class="saved-delete" data-delete-saved="${escapeHtml(record.id)}">削除</button></div></article>`;
   }).join('');
 }
 
@@ -73,7 +83,7 @@ function updateSaveResultButton() {
 
 function renderChipSection(totals) {
   const chips = game.chips || [0, 0, 0, 0];
-  $('#chip-inputs').innerHTML = game.players.map((name, i) => `<article class="chip-card" style="--player:${colors[i]}"><span class="field-label chip-player-name"><i class="player-dot p${i}"></i>${escapeHtml(name)}</span><span class="chip-control"><input name="chip${i}" aria-label="${escapeHtml(name)}のチップ枚数" type="text" inputmode="numeric" maxlength="4" value="${chips[i] || ''}" placeholder="0" autocomplete="off" spellcheck="false" data-previous="${chips[i] || ''}"><span class="chip-unit">枚</span><button class="chip-sign-button" type="button" data-chip-index="${i}" aria-label="${escapeHtml(name)}のチップ枚数の正負を切り替え">±</button></span><span class="chip-points" id="chip-points-${i}"></span><strong class="final-total" id="final-total-${i}"></strong></article>`).join('');
+  $('#chip-inputs').innerHTML = game.players.map((name, i) => `<article class="chip-card" style="--player:${colors[i]}"><span class="field-label chip-player-name"><i class="player-dot p${i}"></i>${escapeHtml(name)}</span><span class="chip-control"><input class="${inputTone(chips[i])}" name="chip${i}" aria-label="${escapeHtml(name)}のチップ枚数" type="text" inputmode="numeric" maxlength="4" value="${chips[i] || ''}" placeholder="0" autocomplete="off" spellcheck="false" data-previous="${chips[i] || ''}"><span class="chip-unit">枚</span><button class="chip-sign-button" type="button" data-chip-index="${i}" aria-label="${escapeHtml(name)}のチップ枚数の正負を切り替え">±</button></span><span class="chip-points" id="chip-points-${i}"></span><strong class="final-total" id="final-total-${i}"></strong></article>`).join('');
   updateChipResults(totals);
 }
 
@@ -125,6 +135,9 @@ function updateInputStatus() {
   $('#input-status').textContent = `${count} / 3人 入力済み`;
   $('#score-error').textContent = '';
 }
+function syncInputTone(input) {
+  input.classList.toggle('negative-input', input.value.trim().startsWith('-'));
+}
 // テキスト欄にすることで「不正な入力」と「空欄」を区別します。
 // 入力途中のマイナスや小数点は許容し、登録時に厳密に検証します。
 $('#score-inputs').addEventListener('input', event => {
@@ -136,6 +149,7 @@ $('#score-inputs').addEventListener('input', event => {
     return;
   }
   input.dataset.previous = input.value;
+  syncInputTone(input);
   updateInputStatus();
 });
 $('#score-inputs').addEventListener('click', event => {
@@ -144,6 +158,7 @@ $('#score-inputs').addEventListener('click', event => {
   const input = $(`[name="score${button.dataset.index}"]`);
   input.value = input.value.startsWith('-') ? input.value.slice(1) : '-' + input.value.replace(/^\+/, '');
   input.dataset.previous = input.value;
+  syncInputTone(input);
   updateInputStatus();
   input.focus();
 });
@@ -158,8 +173,46 @@ function registerRound(values) {
 }
 $('#score-form').addEventListener('submit', event => {
   event.preventDefault();
-  try { registerRound([...new FormData(event.currentTarget).values()]); }
+  try {
+    const values = [...new FormData(event.currentTarget).values()];
+    if (editingRoundIndex === null) {
+      registerRound(values);
+    } else {
+      const index = editingRoundIndex;
+      const round = completeRound(values);
+      const rounds = [...game.rounds];
+      rounds[index] = round;
+      editingRoundIndex = null;
+      commit({ ...game, rounds });
+      $('#success').textContent = `第${index + 1}回の結果を修正しました。`;
+    }
+  }
   catch (error) { $('#score-error').textContent = error.message; $('#success').textContent = ''; }
+});
+
+$('#cancel-round-edit').addEventListener('click', () => {
+  editingRoundIndex = null;
+  render();
+  $('#success').textContent = '修正を取り消しました。';
+});
+
+$('#history-body').addEventListener('click', event => {
+  const editButton = event.target.closest('[data-edit-round]');
+  if (editButton) {
+    editingRoundIndex = Number(editButton.dataset.editRound);
+    render();
+    $('.entry-panel').scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    $('#score-inputs input:not([value=""])')?.focus();
+    return;
+  }
+  const deleteButton = event.target.closest('[data-delete-round]');
+  if (!deleteButton) return;
+  const index = Number(deleteButton.dataset.deleteRound);
+  if (!window.confirm(`第${index + 1}回の結果を削除しますか？`)) return;
+  const rounds = game.rounds.filter((_, roundIndex) => roundIndex !== index);
+  editingRoundIndex = null;
+  commit({ ...game, rounds });
+  $('#success').textContent = `第${index + 1}回の結果を削除し、累計を計算し直しました。`;
 });
 
 $('#save-result-button').addEventListener('click', () => {
@@ -185,6 +238,7 @@ $('#chip-inputs').addEventListener('input', event => {
     return;
   }
   input.dataset.previous = input.value;
+  syncInputTone(input);
   // 「-」だけの入力途中は保存せず、数字が続くのを待ちます。
   if (input.value === '-' || input.value === '+') return;
   try {
@@ -205,8 +259,38 @@ $('#chip-inputs').addEventListener('click', event => {
   const input = $(`[name="chip${button.dataset.chipIndex}"]`);
   input.value = input.value.startsWith('-') ? input.value.slice(1) : '-' + input.value.replace(/^\+/, '');
   input.dataset.previous = input.value;
+  syncInputTone(input);
   input.dispatchEvent(new Event('input', { bubbles: true }));
   input.focus();
+});
+
+$('#saved-games-list').addEventListener('click', event => {
+  const openButton = event.target.closest('[data-open-saved]');
+  if (openButton) {
+    const record = savedGames.find(item => item.id === openButton.dataset.openSaved);
+    if (!record) return;
+    if (game?.rounds?.length && !window.confirm('現在開いているゲームから、保存した対局へ切り替えますか？')) return;
+    editingRoundIndex = null;
+    commit({ version: 2, players: [...record.players], rounds: record.rounds.map(round => ({ scores: [...round.scores], autoIndex: round.autoIndex })), chips: [...record.chips], archiveId: record.id });
+    $('#success').textContent = '保存した対局を開きました。各回の修正・削除やチップ変更ができます。';
+    $('#game').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+  const deleteButton = event.target.closest('[data-delete-saved]');
+  if (!deleteButton || !window.confirm('この保存済み対局を削除しますか？')) return;
+  const id = deleteButton.dataset.deleteSaved;
+  try {
+    savedGames = removeSavedGame(id);
+    if (game?.archiveId === id) {
+      const { archiveId, ...activeGame } = game;
+      game = activeGame;
+      saveGame(game);
+    }
+    renderSavedGames();
+    if (game) updateSaveResultButton();
+  } catch {
+    storageWarning('保存した対局を削除できませんでした。ブラウザの保存設定を確認してください。');
+  }
 });
 
 $('#reset-button').addEventListener('click', () => $('#reset-dialog').showModal());

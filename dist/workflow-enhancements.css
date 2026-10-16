@@ -36,9 +36,47 @@
 .saved-game-scores span { display: block; overflow-wrap: anywhere; font-size: .82rem; font-weight: 700; }
 .saved-game-scores b { display: block; margin-top: 5px; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
 
+/* 登録後の各回を、スマホから修正・削除できる操作。 */
+.round-number { display: block; font-size: .9rem; }
+.round-actions { display: grid; gap: 5px; margin-top: 7px; }
+.round-action {
+  min-height: 28px;
+  padding: 3px 5px;
+  border: 1px solid #82998f;
+  border-radius: 5px;
+  background: #f5f6f2;
+  color: #244d41;
+  font-size: .72rem;
+  font-weight: 700;
+}
+.round-action.delete-round { color: #9b3f34; border-color: #c89c95; }
+.cancel-round-edit { margin-top: 10px; }
+
+/* マイナスは入力中から赤く、符号ボタンも大きく表示する。 */
+.score-control input.negative-input,
+.chip-control input.negative-input { color: #b8392e; font-weight: 800; }
+.sign-button,
+.chip-sign-button { font-size: 1.4rem; font-weight: 800; }
+
+/* 保存済み対局には、その日の全履歴・チップと修正操作を残す。 */
+.saved-game-details { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; }
+.saved-game-details summary { min-height: 44px; display: flex; align-items: center; color: #244d41; font-size: .9rem; font-weight: 750; cursor: pointer; }
+.saved-history-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+.saved-history-table { min-width: 390px; }
+.saved-history-table th,
+.saved-history-table td { padding: 9px 5px; font-size: .8rem; }
+.saved-history-table th:first-child { width: 34px; }
+.saved-history-table td small { margin-top: 2px; font-size: .65rem; }
+.saved-chip-line { margin-top: 10px; color: var(--muted); font-size: .78rem; line-height: 1.7; }
+.saved-game-actions { display: grid; grid-template-columns: 1fr auto; gap: 9px; margin-top: 14px; }
+.saved-game-actions button { min-height: 44px; border-radius: 8px; font-weight: 700; }
+.saved-delete { padding: 8px 14px; border: 1px solid #c89c95; background: #f4e6e3; color: #943d34; }
+
 @media (max-width: 640px) {
   .player-roster { margin-top: 18px; padding: 14px; }
   .saved-games-list { grid-template-columns: 1fr; }
   .saved-games-section { margin-top: 28px; }
   .saved-game-card { padding: 14px; }
+  #history-table th:first-child { width: 55px; }
+  .saved-game-actions { grid-template-columns: 1fr; }
 }
