@@ -10,8 +10,8 @@ let editingRoundIndex = null;
 let recoveryNeeded = false;
 const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 const tone = value => value > 0 ? 'positive' : value < 0 ? 'negative' : '';
-const hasMinus = value => /^[-−－]/.test(String(value).trim());
-const displayInputNumber = value => String(value).replace(/^[-−]/, '－');
+const hasMinus = value => /^[-−－ー]/.test(String(value).trim());
+const displayInputNumber = value => String(value).replace(/^[-−－]/, 'ー');
 const inputTone = value => hasMinus(value) ? 'negative-input' : '';
 const scoreInputValue = (round, index) => index === round.autoIndex ? '' : displayInputNumber(round.scores[index] / 10);
 
@@ -46,7 +46,7 @@ function render() {
   $('#entry-title').textContent = editingRound ? `第${editingRoundIndex + 1}回を修正` : `第${game.rounds.length + 1}回の結果`;
   $('#score-inputs').innerHTML = game.players.map((name, i) => {
     const value = editingRound ? scoreInputValue(editingRound, i) : '';
-    return `<label><span class="field-label"><i class="player-dot p${i}"></i>${escapeHtml(name)}</span><span class="score-control"><input class="${inputTone(value)}" name="score${i}" aria-label="${escapeHtml(name)}の収支" type="text" inputmode="decimal" maxlength="12" value="${escapeHtml(value)}" data-previous="${escapeHtml(value)}" placeholder="例 －20" autocomplete="off" spellcheck="false" aria-describedby="score-error"><button class="sign-button" type="button" data-index="${i}" aria-label="${escapeHtml(name)}の収支の正負を切り替え">±</button></span></label>`;
+    return `<label><span class="field-label"><i class="player-dot p${i}"></i>${escapeHtml(name)}</span><span class="score-control"><input class="${inputTone(value)}" name="score${i}" aria-label="${escapeHtml(name)}の収支" type="text" inputmode="decimal" maxlength="12" value="${escapeHtml(value)}" data-previous="${escapeHtml(value)}" placeholder="例 ー20" autocomplete="off" spellcheck="false" aria-describedby="score-error"><button class="sign-button" type="button" data-index="${i}" aria-label="${escapeHtml(name)}の収支の正負を切り替え">±</button></span></label>`;
   }).join('');
   $('#score-submit-button').innerHTML = editingRound ? '修正を保存 <span aria-hidden="true">✓</span>' : '結果を登録 <span aria-hidden="true">＋</span>';
   $('#cancel-round-edit').hidden = !editingRound;
@@ -149,7 +149,7 @@ $('#score-inputs').addEventListener('input', event => {
   if (!event.target.matches('input')) return;
   const input = event.target;
   input.value = displayInputNumber(input.value);
-  if (!/^[+－]?\d*(?:\.\d?)?$/.test(input.value)) {
+  if (!/^[+ー]?\d*(?:\.\d?)?$/.test(input.value)) {
     input.value = input.dataset.previous || '';
     $('#score-error').textContent = '半角数字・先頭のマイナス・小数1桁で入力してください。';
     return;
@@ -162,7 +162,7 @@ $('#score-inputs').addEventListener('click', event => {
   const button = event.target.closest('[data-index]');
   if (!button) return;
   const input = $(`[name="score${button.dataset.index}"]`);
-  input.value = hasMinus(input.value) ? input.value.slice(1) : '－' + input.value.replace(/^\+/, '');
+  input.value = hasMinus(input.value) ? input.value.slice(1) : 'ー' + input.value.replace(/^\+/, '');
   input.dataset.previous = input.value;
   syncInputTone(input);
   updateInputStatus();
@@ -239,7 +239,7 @@ $('#chip-inputs').addEventListener('input', event => {
   if (!event.target.matches('input')) return;
   const input = event.target;
   input.value = displayInputNumber(input.value);
-  if (!/^[+－]?\d*$/.test(input.value)) {
+  if (!/^[+ー]?\d*$/.test(input.value)) {
     input.value = input.dataset.previous || '';
     $('#chip-error').textContent = 'チップは枚数を半角の整数で入力してください。';
     return;
@@ -247,7 +247,7 @@ $('#chip-inputs').addEventListener('input', event => {
   input.dataset.previous = input.value;
   syncInputTone(input);
   // 「-」だけの入力途中は保存せず、数字が続くのを待ちます。
-  if (input.value === '－' || input.value === '+') return;
+  if (input.value === 'ー' || input.value === '+') return;
   try {
     const index = Number(input.name.replace('chip', ''));
     const chips = [...game.chips];
@@ -264,7 +264,7 @@ $('#chip-inputs').addEventListener('click', event => {
   const button = event.target.closest('[data-chip-index]');
   if (!button) return;
   const input = $(`[name="chip${button.dataset.chipIndex}"]`);
-  input.value = hasMinus(input.value) ? input.value.slice(1) : '－' + input.value.replace(/^\+/, '');
+  input.value = hasMinus(input.value) ? input.value.slice(1) : 'ー' + input.value.replace(/^\+/, '');
   input.dataset.previous = input.value;
   syncInputTone(input);
   input.dispatchEvent(new Event('input', { bubbles: true }));

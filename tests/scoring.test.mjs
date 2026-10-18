@@ -18,6 +18,7 @@ test('負数・自動計算の負数・小数を正確に計算', () => {
   assert.deepEqual(completeRound(['-5.5', '10.1', '-2.2', '']).scores, [-55, 101, -22, -24]);
   assert.deepEqual(completeRound(['−20', '−10', '10', '']).scores, [-200, -100, 100, 200]);
   assert.deepEqual(completeRound(['－20', '－10', '10', '']).scores, [-200, -100, 100, 200]);
+  assert.deepEqual(completeRound(['ー20', 'ー10', '10', '']).scores, [-200, -100, 100, 200]);
   assert.deepEqual(completeRound(['-20', '-10', '10', '']).scores, [-200, -100, 100, 200]);
   assert.deepEqual(completeRound(['0.1', '0.2', '0.3', '']).scores, [1, 2, 3, -6]);
 });
@@ -39,6 +40,7 @@ test('チップ枚数を1枚5点で換算し、現在累計へ加算', () => {
   assert.equal(parseChipCount('3'), 3);
   assert.equal(parseChipCount('−3'), -3);
   assert.equal(parseChipCount('－3'), -3);
+  assert.equal(parseChipCount('ー3'), -3);
   assert.equal(parseChipCount(''), 0);
   assert.deepEqual(getChipPoints(chips), [150, -50, 0, -100]);
   assert.deepEqual(getFinalTotals(rounds, chips), [-50, -150, 100, 100]);
