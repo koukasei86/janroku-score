@@ -1,4 +1,4 @@
-const CACHE_NAME = 'janroku-v20';
+const CACHE_NAME = 'janroku-v21';
 const APP_FILES = [
   '/', '/index.html', '/styles.css', '/iphone.css', '/reset-button.css', '/install-guide.css', '/chips-and-readability.css', '/workflow-enhancements.css', '/comfort-theme.css',
   '/app.mjs', '/scoring.mjs', '/storage.mjs', '/manifest.webmanifest', '/icon.svg',
