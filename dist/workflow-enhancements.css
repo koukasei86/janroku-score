@@ -27,7 +27,7 @@
 
 .saved-games-section { margin-top: 34px; padding-top: 28px; border-top: 1px solid var(--border); }
 .saved-games-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-.saved-game-card { padding: 17px; border: 1px solid var(--border); border-radius: 12px; background: white; }
+.saved-game-card { min-width: 0; max-width: 100%; padding: 17px; border: 1px solid var(--border); border-radius: 12px; background: white; overflow: hidden; }
 .saved-game-heading { display: flex; justify-content: space-between; gap: 8px; align-items: center; margin-bottom: 14px; }
 .saved-game-heading strong { font-size: .95rem; }
 .saved-game-heading span { color: var(--muted); font-size: .8rem; }
@@ -68,9 +68,9 @@
 .chip-sign-button { font-size: 1.4rem; font-weight: 800; }
 
 /* 保存済み対局には、その日の全履歴・チップと修正操作を残す。 */
-.saved-game-details { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; }
+.saved-game-details { min-width: 0; max-width: 100%; margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; }
 .saved-game-details summary { min-height: 44px; display: flex; align-items: center; color: #244d41; font-size: .9rem; font-weight: 750; cursor: pointer; }
-.saved-history-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+.saved-history-wrap { min-width: 0; max-width: 100%; overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; -webkit-overflow-scrolling: touch; }
 .saved-history-table { min-width: 390px; }
 .saved-history-table th,
 .saved-history-table td { padding: 9px 5px; font-size: .8rem; }
@@ -86,6 +86,13 @@
   .saved-games-list { grid-template-columns: 1fr; }
   .saved-games-section { margin-top: 28px; }
   .saved-game-card { padding: 14px; }
+  .saved-game-scores { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .saved-game-scores div { padding: 10px 6px; }
+  .saved-history-table { width: 100%; min-width: 0; table-layout: fixed; }
+  .saved-history-table th,
+  .saved-history-table td { padding: 9px 2px; font-size: .72rem; overflow-wrap: anywhere; }
+  .saved-history-table th:first-child { width: 30px; }
+  .saved-chip-line { overflow-wrap: anywhere; }
   #history-table th:first-child { width: 55px; }
   .saved-game-actions { grid-template-columns: 1fr; }
 }
