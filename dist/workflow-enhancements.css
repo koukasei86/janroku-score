@@ -61,7 +61,8 @@
 }
 .score-control input.negative-input,
 .chip-control input.negative-input {
-  color: #b8392e;
+  color: #a9231a;
+  text-shadow: .35px 0 currentColor, -.35px 0 currentColor;
 }
 .sign-button,
 .chip-sign-button { font-size: 1.4rem; font-weight: 800; }
