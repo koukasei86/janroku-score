@@ -21,8 +21,18 @@ body { background: #070a09; }
 .app-footer { color: #c9d2cd; }
 
 .site-header {
-  background: #c3cec8;
-  border-bottom-color: #96aba1;
+  background: #050706;
+  border-bottom-color: #303633;
+}
+.site-header .brand strong,
+.site-header .brand-reading,
+.site-header .brand small,
+.site-header .version { color: #f7f8f7; }
+.site-header .brand-mark {
+  background: #f7f8f4;
+  color: #050706;
+  border: 1px solid #d7dcd9;
+  box-shadow: 0 3px 0 #5e6763;
 }
 
 .panel,
@@ -86,5 +96,5 @@ dialog { background: #eef1ed; }
 @media (max-width: 480px) {
   html,
   body { background: #070a09; }
-  .site-header { background: rgb(195 206 200 / 97%); }
+  .site-header { background: rgb(5 7 6 / 97%); }
 }
