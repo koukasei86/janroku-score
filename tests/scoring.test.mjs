@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { completeRound, getRemainingScores, getTotals, getRanks, getChipPoints, getFinalTotals, parseChipCount, formatScore, validateNames } from '../dist/scoring.mjs';
+import { completeRound, getRemainingScores, getTotals, getRanks, getChipPoints, getFinalTotals, parseChipCount, formatScore, normalizeNumericText, validateNames } from '../dist/scoring.mjs';
 import { loadGame, saveGame, removeGame, loadPlayerRoster, rememberPlayers, loadSavedGames, saveCompletedGame, removeSavedGame, STORAGE_KEY, PLAYER_ROSTER_KEY, SAVED_GAMES_KEY } from '../dist/storage.mjs';
 
 test('4人の名前・空白除去・不足時のエラー', () => {
@@ -19,8 +19,10 @@ test('負数・自動計算の負数・小数を正確に計算', () => {
   assert.deepEqual(completeRound(['−20', '−10', '10', '']).scores, [-200, -100, 100, 200]);
   assert.deepEqual(completeRound(['－20', '－10', '10', '']).scores, [-200, -100, 100, 200]);
   assert.deepEqual(completeRound(['ー20', 'ー10', '10', '']).scores, [-200, -100, 100, 200]);
+  assert.deepEqual(completeRound(['－２０', 'ー１０', '１０', '']).scores, [-200, -100, 100, 200]);
   assert.deepEqual(completeRound(['-20', '-10', '10', '']).scores, [-200, -100, 100, 200]);
   assert.deepEqual(completeRound(['0.1', '0.2', '0.3', '']).scores, [1, 2, 3, -6]);
+  assert.equal(normalizeNumericText(' －２０．５ '), '-20.5');
 });
 test('空欄数・不正文字・範囲外の入力を拒否', () => {
   for (const values of [['', '', '', ''], ['30', '30', '', ''], ['30', '30', '30', '30'], ['abc', '30', '30', ''], ['-', '30', '30', ''], ['3.12', '30', '30', ''], ['Infinity', '30', '30', ''], ['1e2', '30', '30', ''], ['999999999', '30', '30', ''], ['-99999', '-99999', '30', '']]) assert.throws(() => completeRound(values));
@@ -41,6 +43,7 @@ test('チップ枚数を1枚5点で換算し、現在累計へ加算', () => {
   assert.equal(parseChipCount('−3'), -3);
   assert.equal(parseChipCount('－3'), -3);
   assert.equal(parseChipCount('ー3'), -3);
+  assert.equal(parseChipCount('－３'), -3);
   assert.equal(parseChipCount(''), 0);
   assert.deepEqual(getChipPoints(chips), [150, -50, 0, -100]);
   assert.deepEqual(getFinalTotals(rounds, chips), [-50, -150, 100, 100]);

@@ -4,9 +4,21 @@ export const TOTAL = 1200;
 export const LIMIT = 999999; // 異常な桁数や誤入力を拒否するための上限。
 export const CHIP_LIMIT = 999;
 
+// iPhoneの日本語キーボードで入力される全角数字や各種マイナス記号を、
+// 計算に使う半角表記へそろえます。
+export function normalizeNumericText(value) {
+  return String(value)
+    .trim()
+    .replace(/[０-９]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xfee0))
+    .replace(/[−－ー―–—﹣]/g, '-')
+    .replace(/[＋﹢]/g, '+')
+    .replace(/．/g, '.')
+    .replace(/[\s　]/g, '');
+}
+
 export function parseScore(value) {
-  const text = String(value).trim().replace(/^[−－ー]/, '-');
-  if (!/^[+-]?\d+(?:\.\d)?$/.test(text)) throw new Error('点数は半角数字で入力してください。小数は1桁まで使えます。');
+  const text = normalizeNumericText(value);
+  if (!/^[+-]?\d+(?:\.\d)?$/.test(text)) throw new Error('点数は数字で入力してください。小数は1桁まで使えます。');
   const units = Math.round(Number(text) * 10);
   if (!Number.isSafeInteger(units) || Math.abs(units) > LIMIT) throw new Error('点数は −99,999.9 〜 99,999.9 の範囲で入力してください。');
   return units;
@@ -28,9 +40,9 @@ export function getTotals(rounds) {
   return rounds.reduce((totals, round) => totals.map((total, index) => total + round.scores[index]), [0, 0, 0, 0]);
 }
 export function parseChipCount(value) {
-  const text = String(value).trim().replace(/^[−－ー]/, '-');
+  const text = normalizeNumericText(value);
   if (text === '') return 0;
-  if (!/^[+-]?\d+$/.test(text)) throw new Error('チップは枚数を半角の整数で入力してください。');
+  if (!/^[+-]?\d+$/.test(text)) throw new Error('チップは枚数を整数で入力してください。');
   const count = Number(text);
   if (!Number.isSafeInteger(count) || Math.abs(count) > CHIP_LIMIT) throw new Error('チップは −999枚〜999枚の範囲で入力してください。');
   return count;
